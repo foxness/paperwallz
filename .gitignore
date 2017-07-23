@@ -65,3 +65,6 @@ database/**
 
 # VS Code files
 .vscode
+
+# Secret
+secret.js
