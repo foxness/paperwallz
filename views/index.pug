@@ -8,14 +8,13 @@ html
   body
     h1 Paperwallz
 
-    input#text(type='text', placeholder='Enter the title')
+    input#title(type='text', placeholder='Enter the title')
     input#url(type='text', placeholder='Enter the url')
-    input#submit(type='button', onclick='jQuery.submit()', value='Submit')
+    input#submit(type='button', onclick='jQuery.submit()', value='Add')
 
     if wallpaper_list.length > 0
       ul
         each wallpaper in wallpaper_list
-          li 
-            #{wallpaper.title} #{wallpaper.url}
+          li #{wallpaper.title} #{wallpaper.url}
     else
       p There are no wallpapers.

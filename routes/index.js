@@ -1,17 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-let indexController = require('../controllers/indexController')
+let wallpaperController = require('../controllers/wallpaperController')
 
-// /* GET home page. */
-// router.get('/', function(req, res, next) {
-//   res.render('index', { title: 'Express' });
-// });
-
-/* GET home page. */
-router.get('/', indexController.index_get);
-
-/* POST home page. */
-router.post('/', indexController.index_post);
+router.get('/', wallpaperController.wallpaper_list);
+router.post('/add', wallpaperController.wallpaper_add);
 
 module.exports = router;
