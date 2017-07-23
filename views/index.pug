@@ -1,5 +1,12 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 Paperwallz
+
+  ul
+  each wallpaper in wallpaper_list
+    li 
+      #{wallpaper.title} #{wallpaper.url}
+
+  else
+    li There are no wallpapers.
