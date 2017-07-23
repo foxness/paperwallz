@@ -1,12 +1,21 @@
-extends layout
+doctype html
+html
+  head
+    title Paperwallz
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(src='/javascripts/script.js')
+  body
+    h1 Paperwallz
 
-block content
-  h1 Paperwallz
+    input#text(type='text', placeholder='Enter the title')
+    input#url(type='text', placeholder='Enter the url')
+    input#submit(type='button', onclick='jQuery.submit()', value='Submit')
 
-  ul
-  each wallpaper in wallpaper_list
-    li 
-      #{wallpaper.title} #{wallpaper.url}
-
-  else
-    li There are no wallpapers.
+    if wallpaper_list.length > 0
+      ul
+        each wallpaper in wallpaper_list
+          li 
+            #{wallpaper.title} #{wallpaper.url}
+    else
+      p There are no wallpapers.
