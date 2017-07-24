@@ -14,15 +14,15 @@ $(() =>
 
     jQuery.submit = () =>
     {
-        var title = $('#title').val().trim()
-        var url = $('#url').val().trim()
+        let title = $('#title').val().trim()
+        let url = $('#url').val().trim()
         // if (title.length == 0 || !isURL(title))
         // {
         //     alert('Bad input')
         //     // jQuery.showError()
         //     return
         // }
-        
+
         $.ajax(
         {
             method: 'POST',
@@ -30,7 +30,7 @@ $(() =>
             data: { title: title, url: url },
             success: (data) =>
             {
-                location.reload()
+                location.reload(true)
                 // alert('success')
                 // if (data == 'url not valid')
                 // {
@@ -38,7 +38,7 @@ $(() =>
                 //     return
                 // }
 
-                // var link = `http://${location.hostname}/${data}`
+                // let link = `http://${location.hostname}/${data}`
                 // $('.genUrl').text(link).attr('href', link).show()
             }
         })

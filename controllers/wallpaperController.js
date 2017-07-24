@@ -1,31 +1,41 @@
-var Wallpaper = require('../models/wallpaper');
+let Wallpaper = require('../models/wallpaper')
 
-exports.wallpaper_list = (req, res) => {
+exports.wallpaper_list = (req, res, next) =>
+{
     Wallpaper.find()
         //.sort([['family_name', 'ascending']])
-        .exec((err, list_wallpapers) => {
-            if (err) { return next(err); }
-            //Successful, so render
-            res.render('index', { wallpaper_list: list_wallpapers });
-        });
+        .exec((err, list_wallpapers) =>
+        {
+            if (err)
+                return next(err)
+
+            res.render('index', { wallpaper_list: list_wallpapers })
+        })
 }
 
-exports.wallpaper_add = (req, res) => {
-    var wallpaper = new Wallpaper({ title: req.body.title, url: req.body.url })
+exports.wallpaper_add = (req, res, next) =>
+{
+    let wallpaper = new Wallpaper({ title: req.body.title, url: req.body.url })
 
-    Wallpaper.findOne({ 'url': req.body.url })
-        .exec((err, found_wallpaper) => {
-            console.log('found_wallpaper: ' + found_wallpaper);
-            if (err) { return next(err); }
+    Wallpaper.findOne({ 'url': req.body.url }).exec((err, found_wallpaper) =>
+    {
+        if (err)
+            return next(err)
 
-            if (found_wallpaper) {
-                res.send('Wallpaper already exists');
-            }
-            else {
-                wallpaper.save(function (err) {
-                    if (err) { return next(err); }
-                    res.end()
-                });
-            }
-        });
+        if (found_wallpaper)
+        {
+            res.send('Wallpaper already exists');
+            console.log('found_wallpaper: ' + found_wallpaper)
+        }
+        else
+        {
+            wallpaper.save((err) =>
+            {
+                if (err)
+                    return next(err)
+
+                res.end()
+            })
+        }
+    })
 }

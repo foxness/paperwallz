@@ -68,3 +68,6 @@ database/**
 
 # Secret
 secret.js
+
+# JSBeautify
+.jsbeautifyrc

@@ -1,13 +1,12 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose')
 
-var Schema = mongoose.Schema;
+let Schema = mongoose.Schema
 
-var WallpaperSchema = Schema(
-  {
-      title: {type: String, required: true},
-      url: {type: String, required: true}
-  }
-);
+let WallpaperSchema = Schema(
+{
+    title: { type: String, required: true },
+    url: { type: String, required: true }
+})
 
 // // Virtual for author's full name
 // WallpaperSchema
@@ -24,4 +23,4 @@ var WallpaperSchema = Schema(
 // });
 
 //Export model
-module.exports = mongoose.model('Wallpaper', WallpaperSchema);
+module.exports = mongoose.model('Wallpaper', WallpaperSchema)
