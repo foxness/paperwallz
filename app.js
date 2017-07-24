@@ -9,7 +9,7 @@ let index = require('./routes/index')
 
 let app = express()
 
-let secret = require('./secret')
+let secret = require('./config/secret')
 
 //Set up mongoose connection
 let mongoose = require('mongoose')

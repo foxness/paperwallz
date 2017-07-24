@@ -4,7 +4,7 @@ let Schema = mongoose.Schema
 
 let QueueSchema = Schema(
 {
-    queue : [{ type: Schema.Types.ObjectId, ref: 'Wallpaper', required: true }],
+    queue : {type: [{ type: Schema.Types.ObjectId, ref: 'Wallpaper'}], required: true},
     name : { type: String, required: true }
 })
 
