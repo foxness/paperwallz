@@ -1,9 +1,9 @@
 let express = require('express')
 let router = express.Router()
 
-let wallpaperController = require('../controllers/wallpaperController')
+let mainController = require('../controllers/mainController')
 
-router.get('/', wallpaperController.wallpaper_list)
-router.post('/add', wallpaperController.wallpaper_add)
+router.get('/', mainController.queue_get)
+router.post('/add', mainController.wallpaper_add)
 
 module.exports = router

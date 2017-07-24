@@ -6,15 +6,15 @@ html
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
     script(src='/javascripts/script.js')
   body
-    h1 Paperwallz
+    h1= queue.name
 
     input#title(type='text', placeholder='Enter the title')
     input#url(type='text', placeholder='Enter the url')
     input#submit(type='button', onclick='jQuery.submit()', value='Add')
 
-    if wallpaper_list.length > 0
+    if queue.queue.length > 0
       ul
-        each wallpaper in wallpaper_list
+        each wallpaper in queue.queue
           li #{wallpaper.title} #{wallpaper.url}
     else
       p There are no wallpapers.
