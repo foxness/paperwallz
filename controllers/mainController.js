@@ -42,3 +42,8 @@ exports.wallpaper_add = (req, res, next) =>
             (err, results) => { res.end() })
     })
 }
+
+exports.wallpaper_delete = (req, res, next) =>
+{
+    Wallpaper.findByIdAndRemove(req.body.id, (err, results) => { res.end() })
+}

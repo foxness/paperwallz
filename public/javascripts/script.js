@@ -5,53 +5,30 @@ function isURL(str)
 
 $(() =>
 {
-    // $('.error').css('display', 'flex').hide()
+    paperwallz = {}
 
-    // jQuery.showError = () =>
-    // {
-    //     $('.error').slideDown().delay(5000).slideUp()
-    // }    
-
-    jQuery.submit = () =>
+    paperwallz.add_submit = () =>
     {
-        let title = $('#title').val().trim()
-        let url = $('#url').val().trim()
-        // if (title.length == 0 || !isURL(title))
-        // {
-        //     alert('Bad input')
-        //     // jQuery.showError()
-        //     return
-        // }
+        let title = $('#add_title').val().trim()
+        let url = $('#add_url').val().trim()
 
         $.ajax(
         {
             method: 'POST',
             url: '/add',
             data: { title: title, url: url },
-            success: (data) =>
-            {
-                location.reload(true)
-                // alert('success')
-                // if (data == 'url not valid')
-                // {
-                //     jQuery.showError()
-                //     return
-                // }
-
-                // let link = `http://${location.hostname}/${data}`
-                // $('.genUrl').text(link).attr('href', link).show()
-            }
+            success: (data) => { location.reload(true) }
         })
     }
 
-    // $('#text').focus().select()
-
-    // $("#text").keypress((e) =>
-    // {
-    //     if ((e.keyCode ? e.keyCode : e.which) == 13) // enter pressed
-    //     {
-    //         e.preventDefault();
-    //         jQuery.submit()
-    //     }
-    // })
+    paperwallz.delete = (id) =>
+    {
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/delete',
+            data: { id: id },
+            success: (data) => { location.reload(true) }
+        })
+    }
 })

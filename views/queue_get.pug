@@ -8,13 +8,23 @@ html
   body
     h1= queue.name
 
-    input#title(type='text', placeholder='Enter the title')
-    input#url(type='text', placeholder='Enter the url')
-    input#submit(type='button', onclick='jQuery.submit()', value='Add')
-
+    input#add_title(type='text', placeholder='Enter the title')
+    input#add_url(type='text', placeholder='Enter the url')
+    input#add_submit(type='button', onclick='paperwallz.add_submit()', value='Add')
+    br
+    br
     if queue.queue.length > 0
-      ul
+      table
+        tr
+          th Title
+          th Link
+          th Action
         each wallpaper in queue.queue
-          li #{wallpaper.title} #{wallpaper.url}
+          tr
+            td= wallpaper.title
+            td
+              a(href=wallpaper.url) Link
+            td
+              a(href='#', onclick=`paperwallz.delete('${wallpaper.id}')`) Delete
     else
       p There are no wallpapers.
