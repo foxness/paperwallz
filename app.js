@@ -4,12 +4,58 @@ let favicon = require('serve-favicon')
 let logger = require('morgan')
 let cookieParser = require('cookie-parser')
 let bodyParser = require('body-parser')
+let passport = require('passport')
+let session = require('express-session')
+let RedditStrategy = require('passport-reddit').Strategy
+
+let User = require('./models/user')
+let secret = require('./config/secret')
 
 let index = require('./routes/index')
 
-let app = express()
+passport.serializeUser((user, done) =>
+{
+    done(null, user.id);
+});
 
-let secret = require('./config/secret')
+passport.deserializeUser((obj, done) =>
+{
+    User.findById(obj, (err, result) =>
+    {
+        done(err, result);
+    })
+});
+
+passport.use(new RedditStrategy(
+    {
+        clientID: secret.reddit_clientid,
+        clientSecret: secret.reddit_secret,
+        callbackURL: 'http://localhost/callback',
+        scope: 'submit'
+    },
+    (accessToken, refreshToken, profile, done) =>
+    {
+        User.findOne({ name: profile.name }, (err, result) =>
+        {
+            if (err)
+                return done(err)
+
+            if (result)
+                return done(null, result)
+
+            let user = new User({ name: profile.name })
+            user.save((err) =>
+            {
+                if (err)
+                    return done(err)
+
+                return done(null, user)
+            })
+        })
+    }
+))
+
+let app = express()
 
 //Set up mongoose connection
 let mongoose = require('mongoose')
@@ -28,6 +74,9 @@ app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(session({ secret: 'keyboard cat' }))
+app.use(passport.initialize())
+app.use(passport.session())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
