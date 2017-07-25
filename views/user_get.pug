@@ -6,20 +6,20 @@ html
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
     script(src='/javascripts/script.js')
   body
-    h1= queue.name
+    h1= user.name
 
     input#add_title(type='text', placeholder='Enter the title')
     input#add_url(type='text', placeholder='Enter the url')
     input#add_submit(type='button', onclick='paperwallz.add_submit()', value='Add')
     br
     br
-    if queue.queue.length > 0
+    if user.queue.length > 0
       table
         tr
           th Title
           th Link
           th Action
-        each wallpaper in queue.queue
+        each wallpaper in user.queue
           tr
             td= wallpaper.title
             td

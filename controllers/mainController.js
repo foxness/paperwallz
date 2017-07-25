@@ -1,29 +1,35 @@
 let Wallpaper = require('../models/wallpaper')
-let Queue = require('../models/queue')
+let User = require('../models/user')
 let async = require('async')
 
-exports.queue_get = (req, res, next) =>
+exports.user_get = (req, res, next) =>
 {
-    Queue.findOne({ 'name': 'foxneZz' }).populate('queue').exec((err, queue) =>
+    User.findOne({ 'name': 'foxneZz' }).populate('queue').exec((err, user) =>
     {
-        let q = queue
+        let u = user
 
         if (err)
             return next(err)
 
-        if (!q)
+        if (u)
+            res.render('user_get', { user: u })
+        else
         {
-            q = new Queue({ name: 'foxneZz', queue: [] })
-            q.save()
+            u = new User({ name: 'foxneZz', queue: [] })
+            u.save((err) =>
+            {
+                if (err)
+                    return next(err)
+                
+                res.render('user_get', { user: u })
+            })
         }
-
-        res.render('queue_get', { queue: q })
     })
 }
 
 exports.wallpaper_add = (req, res, next) =>
 {
-    Queue.findOne({ 'name': 'foxneZz' }).populate('queue').exec((err, queue) =>
+    User.findOne({ 'name': 'foxneZz' }).populate('queue').exec((err, user) =>
     {
         if (err)
             return next(err)
@@ -35,8 +41,8 @@ exports.wallpaper_add = (req, res, next) =>
                 (callback) => { wallpaper.save(callback) },
                 (callback) =>
                 {
-                    queue.queue.push(wallpaper)
-                    queue.save(callback)
+                    user.queue.push(wallpaper)
+                    user.save(callback)
                 }
             ],
             (err, results) => { res.end() })
