@@ -8,6 +8,12 @@ html
   body
     h1= user.name
 
+    span  
+    a(href='/logout') Log out
+    
+    br
+    br
+
     input#add_title(type='text', placeholder='Enter the title')
     input#add_url(type='text', placeholder='Enter the url')
     input#add_submit(type='button', onclick='paperwallz.add_submit()', value='Add')
