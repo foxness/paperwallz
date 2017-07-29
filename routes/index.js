@@ -21,5 +21,6 @@ router.get('/queue', ensureAuthenticated, mainController.queue)
 
 router.post('/add', mainController.wallpaper_add)
 router.post('/delete', mainController.wallpaper_delete)
+router.post('/post', mainController.wallpaper_post)
 
 module.exports = router

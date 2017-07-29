@@ -31,4 +31,15 @@ $(() =>
             success: (data) => { location.reload(true) }
         })
     }
+
+    paperwallz.post = (id) =>
+    {
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/post',
+            data: { id: id }//,
+            // success: (data) => { location.reload(true) }
+        })
+    }
 })

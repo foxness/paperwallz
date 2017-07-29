@@ -4,6 +4,7 @@ let passport = require('passport')
 
 let Wallpaper = require('../models/wallpaper')
 let User = require('../models/user')
+let Reddit = require('../classes/reddit')
 
 exports.queue = (req, res, next) =>
 {
@@ -43,6 +44,24 @@ exports.wallpaper_delete = (req, res, next) =>
     Wallpaper.findByIdAndRemove(req.body.id, (err, results) => { res.end() })
 }
 
+exports.wallpaper_post = (req, res, next) =>
+{
+    console.log('handling wallpaper_post...')
+
+    Wallpaper.findById(req.body.id, (err, result) =>
+    {
+        if (err)
+            return next(err)
+
+        console.log('found the wallpaper...\nposting...')
+        let reddit = new Reddit(req.user.refreshToken, req.user.accessToken)
+        reddit.post(result.url, result.title, (err, result) =>
+        {
+            res.end()
+        })
+    })
+}
+
 exports.login = (req, res, next) =>
 {
     if (req.isAuthenticated())
@@ -57,6 +76,7 @@ exports.auth_reddit = (req, res, next) =>
     passport.authenticate('reddit',
     {
         state: req.session.state,
+        duration: 'permanent'
     })(req, res, next)
 }
 

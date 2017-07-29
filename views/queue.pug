@@ -32,5 +32,7 @@ html
               a(href=wallpaper.url) Link
             td
               a(href='#', onclick=`paperwallz.delete('${wallpaper.id}')`) Delete
+              |  
+              a(href='#', onclick=`paperwallz.post('${wallpaper.id}')`) Post
     else
       p There are no wallpapers.

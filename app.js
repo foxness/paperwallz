@@ -35,6 +35,8 @@ passport.use(new RedditStrategy(
     },
     (accessToken, refreshToken, profile, done) =>
     {
+        console.log(`profile: ${profile}`)
+
         User.findOne({ name: profile.name }, (err, result) =>
         {
             if (err)
@@ -43,7 +45,7 @@ passport.use(new RedditStrategy(
             if (result)
                 return done(null, result)
 
-            let user = new User({ name: profile.name })
+            let user = new User({ name: profile.name, accessToken: accessToken, refreshToken: refreshToken })
             user.save((err) =>
             {
                 if (err)
