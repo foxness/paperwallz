@@ -35,24 +35,33 @@ passport.use(new RedditStrategy(
     },
     (accessToken, refreshToken, profile, done) =>
     {
-        console.log(`profile: ${profile}`)
-
         User.findOne({ name: profile.name }, (err, result) =>
         {
             if (err)
                 return done(err)
 
             if (result)
-                return done(null, result)
-
-            let user = new User({ name: profile.name, accessToken: accessToken, refreshToken: refreshToken })
-            user.save((err) =>
             {
-                if (err)
-                    return done(err)
+                User.findByIdAndUpdate(result.id, { accessToken: accessToken, refreshToken: refreshToken }, (err, result) =>
+                {
+                    if (err)
+                        return done(err)
 
-                return done(null, user)
-            })
+                    return done(null, result)
+                })
+
+            }
+            else
+            {
+                let user = new User({ name: profile.name, accessToken: accessToken, refreshToken: refreshToken })
+                user.save((err) =>
+                {
+                    if (err)
+                        return done(err)
+
+                    return done(null, user)
+                })
+            }
         })
     }
 ))

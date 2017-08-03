@@ -29,11 +29,12 @@ class Reddit
             form:
             {
                 'api_type': 'json',
-                'kind': 'image',
+                'kind': 'self',
                 'resubmit': 'true',
                 'sendreplies': 'true',
-                'sr': 'wallpapers',
-                'url': image_url,
+                'sr': 'test',
+                'text': image_url,
+                // 'url': image_url,
                 'title': title
             }
         }
