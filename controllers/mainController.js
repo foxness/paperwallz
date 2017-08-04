@@ -1,10 +1,29 @@
 let async = require('async')
 let crypto = require('crypto')
 let passport = require('passport')
+let moment = require('moment')
 
 let Wallpaper = require('../models/wallpaper')
 let User = require('../models/user')
 let Reddit = require('../classes/reddit')
+let Timer = require('../classes/timer')
+
+let myTimer = new Timer(moment.duration(10, 'seconds'))
+
+myTimer.on('start', () =>
+{
+    console.log(`[${moment().format('mm:ss')}] timer started (timePassed: ${myTimer.timePassed().asSeconds()} s)`)
+})
+
+myTimer.on('tick', () =>
+{
+    console.log(`[${moment().format('mm:ss')}] timer tick (timePassed: ${myTimer.timePassed().asSeconds()} s)`)
+})
+
+myTimer.on('stop', () =>
+{
+    console.log(`[${moment().format('mm:ss')}] timer stopped (timePassed: ${myTimer.timePassed().asSeconds()} s)`)
+})
 
 exports.queue = (req, res, next) =>
 {
@@ -15,6 +34,16 @@ exports.queue = (req, res, next) =>
 
         res.render('queue', { user: result })
     })
+}
+
+exports.queue_start = (req, res, next) =>
+{
+    myTimer.start()
+}
+
+exports.queue_stop = (req, res, next) =>
+{
+    myTimer.stop()
 }
 
 exports.wallpaper_add = (req, res, next) =>

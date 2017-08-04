@@ -15,7 +15,7 @@ $(() =>
         $.ajax(
         {
             method: 'POST',
-            url: '/add',
+            url: '/queue/add',
             data: { title: title, url: url },
             success: (data) => { location.reload(true) }
         })
@@ -26,7 +26,7 @@ $(() =>
         $.ajax(
         {
             method: 'POST',
-            url: '/delete',
+            url: '/queue/delete',
             data: { id: id },
             success: (data) => { location.reload(true) }
         })
@@ -37,8 +37,30 @@ $(() =>
         $.ajax(
         {
             method: 'POST',
-            url: '/post',
+            url: '/queue/post',
             data: { id: id }//,
+            // success: (data) => { location.reload(true) }
+        })
+    }
+
+    paperwallz.start = () =>
+    {
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/queue/start'
+            // data: { id: id },
+            // success: (data) => { location.reload(true) }
+        })
+    }
+
+    paperwallz.stop = () =>
+    {
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/queue/stop'
+            // data: { id: id },
             // success: (data) => { location.reload(true) }
         })
     }
