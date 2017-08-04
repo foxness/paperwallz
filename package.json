@@ -12,6 +12,7 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "express-session": "^1.15.4",
+    "moment": "^2.18.1",
     "mongoose": "^4.11.3",
     "morgan": "~1.8.1",
     "passport": "^0.3.2",

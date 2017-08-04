@@ -1,31 +1,63 @@
 let request = require('request')
+let async = require('async')
+let moment = require('moment')
 let secretJs = require('../config/secret')
+let User = require('../models/user')
 
 class Reddit
 {
-    constructor(refreshToken, accessToken)
+    constructor(user)
     {
         this.ACCESS_TOKEN_URL = 'https://www.reddit.com/api/v1/access_token'
         this.SUBMIT_URL = 'https://oauth.reddit.com/api/submit'
+        this.USER_AGENT = 'Paperwallz by /u/foxneZz'
 
-        this.clientId = secretJs.reddit_clientid
-        this.secret = secretJs.reddit_secret
-        this.refreshToken = refreshToken
-        this.accessToken = accessToken
+        this.CLIENT_ID = secretJs.reddit_clientid
+        this.SECRET = secretJs.reddit_secret
 
-        if (accessToken === undefined)
-            throw new Error('Not implemented yet')
+        this.user = user
+    }
 
-        this.requestOptions = {
-            headers: { 'User-Agent': 'Paperwallz by /u/foxneZz' },
-            'auth': { 'bearer': accessToken }
+    refreshAccessToken(callback)
+    {
+        let requestOptions =
+        {
+            headers: { 'User-Agent': this.USER_AGENT },
+            auth:
+            {
+                user: this.CLIENT_ID,
+                pass: this.SECRET
+            },
+            form:
+            {
+                grant_type: 'refresh_token',
+                refresh_token: this.user.refreshToken
+            }
         }
+
+        request.post(this.ACCESS_TOKEN_URL, requestOptions, (err, response, body) =>
+        {
+            if (!err)
+            {
+                User.findByIdAndUpdate(this.user.id, { accessToken: JSON.parse(body).access_token, accessTokenExpireDate: moment().add(1, 'h').toDate() }, ((err, result) =>
+                {
+                    this.user = result
+                    callback(err)
+                }).bind(this))
+            }
+            else
+            {
+                callback(err)
+            }
+        })
     }
 
     post(image_url, title, callback)
     {
         let requestOptions =
         {
+            headers: { 'User-Agent': this.USER_AGENT },
+            auth: { bearer: this.user.accessToken },
             form:
             {
                 'api_type': 'json',
@@ -39,12 +71,33 @@ class Reddit
             }
         }
 
-        let a = Object.assign(this.requestOptions, requestOptions);
+        let funcs =
+        [
+            (callback) =>
+            {
+                request.post(this.SUBMIT_URL, requestOptions, (err, response, body) =>
+                {
+                    if (err)
+                        return callback(err)
 
-        request.post(this.SUBMIT_URL, Object.assign(this.requestOptions, requestOptions), (err, response, body) =>
+                    let parsed = JSON.parse(body).json
+
+                    if (parsed.errors.length > 0)
+                        return callback(parsed.errors)
+                    
+                    callback(err, parsed.data.url)
+                })
+            }
+        ]
+
+        if (!this.user.accessToken || moment().isAfter(moment(this.user.accessTokenExpireDate)))
         {
-            console.log(`err: ${err}\nresponse: ${response}\nbody: ${body}`)
-            callback()
+            funcs.unshift((callback) => { this.refreshAccessToken(callback) })
+        }
+
+        async.series(funcs, (err, results) =>
+        {
+            callback(err, results.pop())
         })
     }
 }

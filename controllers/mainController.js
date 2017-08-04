@@ -46,17 +46,19 @@ exports.wallpaper_delete = (req, res, next) =>
 
 exports.wallpaper_post = (req, res, next) =>
 {
-    console.log('handling wallpaper_post...')
-
     Wallpaper.findById(req.body.id, (err, result) =>
     {
         if (err)
             return next(err)
 
-        console.log('found the wallpaper...\nposting...')
-        let reddit = new Reddit(req.user.refreshToken, req.user.accessToken)
+        let reddit = new Reddit(req.user)
         reddit.post(result.url, result.title, (err, result) =>
         {
+            if (err)
+                return next(err)
+
+            console.log(result)
+
             res.end()
         })
     })

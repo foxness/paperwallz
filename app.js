@@ -6,6 +6,7 @@ let cookieParser = require('cookie-parser')
 let bodyParser = require('body-parser')
 let passport = require('passport')
 let session = require('express-session')
+let moment = require('moment')
 let RedditStrategy = require('passport-reddit').Strategy
 
 let User = require('./models/user')
@@ -39,10 +40,12 @@ passport.use(new RedditStrategy(
         {
             if (err)
                 return done(err)
+            
+            let tokenExpire = moment().add(1, 'h').toDate()
 
             if (result)
             {
-                User.findByIdAndUpdate(result.id, { accessToken: accessToken, refreshToken: refreshToken }, (err, result) =>
+                User.findByIdAndUpdate(result.id, { accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire }, (err, result) =>
                 {
                     if (err)
                         return done(err)
@@ -53,7 +56,7 @@ passport.use(new RedditStrategy(
             }
             else
             {
-                let user = new User({ name: profile.name, accessToken: accessToken, refreshToken: refreshToken })
+                let user = new User({ name: profile.name, accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire })
                 user.save((err) =>
                 {
                     if (err)
@@ -103,6 +106,7 @@ app.use(function(req, res, next)
 // error handler
 app.use(function(err, req, res, next)
 {
+    console.log(err)
     // set locals, only providing error in development
     res.locals.message = err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}
