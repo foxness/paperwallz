@@ -45,7 +45,7 @@ exports.queue_info = (req, res, next) =>
 
         let info = { queue: [], queuePaused: result.queuePaused }
         for (let wallpaper of result.queue) // todo: use map()
-            info.queue.push({ title: wallpaper.title, url: wallpaper.url })
+            info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
 
         if (info.queuePaused)
             info.queueTimeLeft = result.queueTimeLeft

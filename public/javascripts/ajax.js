@@ -64,7 +64,7 @@ $(() =>
     {
         $.getJSON('/queue/info', (info) =>
         {
-            $('body').append('<br>')
+            $('body').append('<br><br>')
 
             if (info.queue.length > 0)
             {
@@ -73,6 +73,7 @@ $(() =>
                 headRow.append($('<th/>').text('#'))
                 headRow.append($('<th/>').text('Title'))
                 headRow.append($('<th/>').text('Link'))
+                headRow.append($('<th/>').text('Actions'))
                 table.append(headRow)
 
                 $.each(info.queue, (rowIndex, r) =>
@@ -81,6 +82,7 @@ $(() =>
                     row.append($('<td/>').text(rowIndex + 1))
                     row.append($('<td/>').text(r.title))
                     row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
+                    row.append($('<td/>').append($('<a/>').attr({'href': '#', 'onclick': `paperwallz.delete('${r.id}')`}).text('Delete')))
                     table.append(row)
                 })
 
