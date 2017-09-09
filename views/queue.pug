@@ -26,22 +26,3 @@ html
     input#add_title(type='text', placeholder='Enter the title')
     input#add_url(type='text', placeholder='Enter the url')
     input#add_submit(type='button', onclick='paperwallz.add_submit()', value='Add')
-    br
-    br
-    if user.queue.length > 0
-      table
-        tr
-          th Title
-          th Link
-          th Action
-        each wallpaper in user.queue
-          tr
-            td= wallpaper.title
-            td
-              a(href=wallpaper.url) Link
-            td
-              a(href='#', onclick=`paperwallz.delete('${wallpaper.id}')`) Delete
-              |  
-              a(href='#', onclick=`paperwallz.post('${wallpaper.id}')`) Post
-    else
-      p There are no wallpapers.
