@@ -36,6 +36,26 @@ exports.queue = (req, res, next) =>
     })
 }
 
+exports.queue_info = (req, res, next) =>
+{
+    req.user.populate('queue', (err, result) =>
+    {
+        if (err)
+            throw new Error(`USER POPULATION ERROR: ${err}`)
+
+        let info = { queue: [], queuePaused: result.queuePaused }
+        for (let wallpaper of result.queue) // todo: use map()
+            info.queue.push({ title: wallpaper.title, url: wallpaper.url })
+
+        if (info.queuePaused)
+            info.queueTimeLeft = result.queueTimeLeft
+        else
+            info.queueSubmissionDate = result.queueSubmissionDate
+        
+        res.json(info)
+    })
+}
+
 exports.queue_start = (req, res, next) =>
 {
     myTimer.start()
