@@ -40,7 +40,7 @@ passport.use(new RedditStrategy(
         {
             if (err)
                 return done(err)
-            
+
             let tokenExpire = moment().add(1, 'h').toDate()
 
             if (result)
@@ -56,7 +56,16 @@ passport.use(new RedditStrategy(
             }
             else
             {
-                let user = new User({ name: profile.name, accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire })
+                let user = new User(
+                {
+                    name: profile.name,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                    accessTokenExpireDate: tokenExpire,
+                    queuePaused: true,
+                    queueTimeLeft: moment.duration(30, 's').asMilliseconds()
+                })
+
                 user.save((err) =>
                 {
                     if (err)
