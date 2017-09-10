@@ -1,5 +1,6 @@
 $(() =>
 {
+    const queueInfo = 'queueInfo'
     paperwallz = {}
 
     paperwallz.add_submit = () =>
@@ -12,7 +13,7 @@ $(() =>
             method: 'POST',
             url: '/queue/add',
             data: { title: title, url: url },
-            success: (data) => { location.reload(true) }
+            success: (data) => { paperwallz.updateQueueInfo() }
         })
     }
 
@@ -23,7 +24,7 @@ $(() =>
             method: 'POST',
             url: '/queue/delete',
             data: { id: id },
-            success: (data) => { location.reload(true) }
+            success: (data) => { paperwallz.updateQueueInfo() }
         })
     }
 
@@ -60,15 +61,15 @@ $(() =>
         })
     }
 
-    paperwallz.fillThePage = () =>
+    paperwallz.updateQueueInfo = () =>
     {
         $.getJSON('/queue/info', (info) =>
         {
-            $('body').append('<br><br>')
+            let element = null
 
             if (info.queue.length > 0)
             {
-                let table = $('<table/>')
+                let table = $('<table/>').addClass(queueInfo)
                 let headRow = $('<tr/>')
                 headRow.append($('<th/>').text('#'))
                 headRow.append($('<th/>').text('Title'))
@@ -86,14 +87,17 @@ $(() =>
                     table.append(row)
                 })
 
-                $('body').append(table)
+                element = table
             }
             else
             {
-                $('body').append('<p>There are no wallpapers.</p>')
+                element = $('<p/>').addClass(queueInfo).text('There are no wallpapers.')
             }
+
+            $(`.${queueInfo}`).remove()
+            $('body').append(element)
         })
     }
 
-    paperwallz.fillThePage()
+    paperwallz.updateQueueInfo()
 })
