@@ -1,7 +1,9 @@
 $(() =>
 {
-    const queueInfo = 'queueInfo'
+    const queueInfoClass = 'queueInfo'
     paperwallz = {}
+
+    let currentInfo = null
 
     paperwallz.add_submit = () =>
     {
@@ -28,76 +30,92 @@ $(() =>
         })
     }
 
-    paperwallz.post = (id) =>
-    {
-        $.ajax(
-        {
-            method: 'POST',
-            url: '/queue/post',
-            data: { id: id }//,
-            // success: (data) => { location.reload(true) }
-        })
-    }
+    // paperwallz.post = (id) =>
+    // {
+    //     $.ajax(
+    //     {
+    //         method: 'POST',
+    //         url: '/queue/post',
+    //         data: { id: id }//,
+    //         // success: (data) => { location.reload(true) }
+    //     })
+    // }
 
     paperwallz.start = () =>
     {
-        $.ajax(
-        {
-            method: 'POST',
-            url: '/queue/start'
-            // data: { id: id },
-            // success: (data) => { location.reload(true) }
-        })
+        startTimer()
+        // $.ajax(
+        // {
+        //     method: 'POST',
+        //     url: '/queue/start'
+        //     // data: { id: id },
+        //     // success: (data) => { location.reload(true) }
+        // })
     }
 
     paperwallz.stop = () =>
     {
-        $.ajax(
+        stopTimer()
+        // $.ajax(
+        // {
+        //     method: 'POST',
+        //     url: '/queue/stop'
+        //     // data: { id: id },
+        //     // success: (data) => { location.reload(true) }
+        // })
+    }
+
+    paperwallz.fillQueue = () =>
+    {
+        let element = null
+
+        if (currentInfo.queue.length > 0)
         {
-            method: 'POST',
-            url: '/queue/stop'
-            // data: { id: id },
-            // success: (data) => { location.reload(true) }
-        })
+            let table = $('<table/>').addClass(queueInfoClass)
+            let headRow = $('<tr/>')
+            headRow.append($('<th/>').text('#'))
+            headRow.append($('<th/>').text('Title'))
+            headRow.append($('<th/>').text('Link'))
+            headRow.append($('<th/>').text('Actions'))
+            table.append(headRow)
+
+            $.each(currentInfo.queue, (rowIndex, r) =>
+            {
+                let row = $('<tr/>')
+                row.append($('<td/>').text(rowIndex + 1))
+                row.append($('<td/>').text(r.title))
+                row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
+                row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `paperwallz.delete('${r.id}')` }).text('Delete')))
+                table.append(row)
+            })
+
+            element = table
+        }
+        else
+        {
+            element = $('<p/>').addClass(queueInfoClass).text('There are no wallpapers.')
+        }
+
+        $(`.${queueInfoClass}`).remove()
+        $('body').append(element)
     }
 
     paperwallz.updateQueueInfo = () =>
     {
-        $.getJSON('/queue/info', (info) =>
+        $.ajax(
         {
-            let element = null
-
-            if (info.queue.length > 0)
+            type: 'GET',
+            url: '/queue/info',
+            dataType: 'json',
+            success: (info) =>
             {
-                let table = $('<table/>').addClass(queueInfo)
-                let headRow = $('<tr/>')
-                headRow.append($('<th/>').text('#'))
-                headRow.append($('<th/>').text('Title'))
-                headRow.append($('<th/>').text('Link'))
-                headRow.append($('<th/>').text('Actions'))
-                table.append(headRow)
-
-                $.each(info.queue, (rowIndex, r) =>
-                {
-                    let row = $('<tr/>')
-                    row.append($('<td/>').text(rowIndex + 1))
-                    row.append($('<td/>').text(r.title))
-                    row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
-                    row.append($('<td/>').append($('<a/>').attr({'href': '#', 'onclick': `paperwallz.delete('${r.id}')`}).text('Delete')))
-                    table.append(row)
-                })
-
-                element = table
-            }
-            else
-            {
-                element = $('<p/>').addClass(queueInfo).text('There are no wallpapers.')
-            }
-
-            $(`.${queueInfo}`).remove()
-            $('body').append(element)
+                currentInfo = info
+            },
+            async: false
         })
     }
 
     paperwallz.updateQueueInfo()
+    paperwallz.fillQueue()
+    updateTimer(currentInfo.queueTimeLeft)
 })
