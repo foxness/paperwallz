@@ -15,7 +15,11 @@ $(() =>
             method: 'POST',
             url: '/queue/add',
             data: { title: title, url: url },
-            success: (data) => { paperwallz.updateQueueInfo() }
+            success: (data) =>
+            {
+                paperwallz.updateQueueInfo()
+                paperwallz.fillQueue()
+            }
         })
     }
 
@@ -26,7 +30,11 @@ $(() =>
             method: 'POST',
             url: '/queue/delete',
             data: { id: id },
-            success: (data) => { paperwallz.updateQueueInfo() }
+            success: (data) =>
+            {
+                paperwallz.updateQueueInfo()
+                paperwallz.fillQueue()
+            }
         })
     }
 

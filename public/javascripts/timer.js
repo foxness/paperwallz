@@ -32,13 +32,19 @@ function tick()
 
 function startTimer()
 {
-    submissionDate = moment().add(dist)
+    if (!timerPaused)
+        return
+    
     timerPaused = false
+    submissionDate = moment().add(dist)
     interval = setInterval(tick, 1)
 }
 
 function stopTimer()
 {
+    if (timerPaused)
+        return
+    
     timerPaused = true
     clearInterval(interval)
 }
