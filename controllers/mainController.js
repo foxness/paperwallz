@@ -6,9 +6,12 @@ let moment = require('moment')
 let Wallpaper = require('../models/wallpaper')
 let User = require('../models/user')
 let Reddit = require('../classes/reddit')
+let QueueState = require('../classes/queueState')
 let Timer = require('../classes/timer')
 
 let myTimer = new Timer(moment.duration(10, 'seconds'))
+
+let queueStates = {}
 
 myTimer.on('start', () =>
 {
@@ -27,13 +30,10 @@ myTimer.on('stop', () =>
 
 exports.queue = (req, res, next) =>
 {
-    req.user.populate('queue', (err, result) =>
-    {
-        if (err)
-            throw new Error(`USER POPULATION ERROR: ${err}`)
-
-        res.render('queue', { user: result })
-    })
+    if (!(req.user.id in queueStates))
+        queueStates[req.user.id] = new QueueState()
+    
+    res.render('queue', { user: req.user })
 }
 
 exports.queue_info = (req, res, next) =>
@@ -43,14 +43,14 @@ exports.queue_info = (req, res, next) =>
         if (err)
             throw new Error(`USER POPULATION ERROR: ${err}`)
 
-        let info = { queue: [], queuePaused: result.queuePaused }
+        let info = { queue: [], queuePaused: queueStates[result.id].paused }
         for (let wallpaper of result.queue) // todo: use map()
             info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
 
         if (info.queuePaused)
-            info.queueTimeLeft = result.queueTimeLeft
+            info.queueTimeLeft = queueStates[result.id].timeLeft
         else
-            info.queueSubmissionDate = result.queueSubmissionDate
+            info.queueSubmissionDate = queueStates[result.id].submissionDate
         
         res.json(info)
     })

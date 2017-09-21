@@ -62,8 +62,6 @@ passport.use(new RedditStrategy(
                     accessToken: accessToken,
                     refreshToken: refreshToken,
                     accessTokenExpireDate: tokenExpire,
-                    queuePaused: true,
-                    queueTimeLeft: moment.duration(30, 's').asMilliseconds()
                 })
 
                 user.save((err) =>
