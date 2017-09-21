@@ -6,64 +6,41 @@ class Timer extends EventEmitter
     constructor(interval) // moment.duration
     {
         super()
-        this.states =
-        {
-            on: 'on',
-            off: 'off',
-            reset: 'reset'
-        }
+        this.paused = true // aka stopped
+        this.timeLeft = interval
+        this.tickDate = null
         this.interval = interval
-        this.reset()
-    }
-
-    reset()
-    {
-        this.state = this.states.reset
-        this.totalOnDuration = moment.duration(0)
-        this.lastStartDate = undefined
-        if (this.timeout)
-            clearTimeout(this.timeout)
-        this.timeout = undefined
-    }
-
-    timePassed()
-    {
-        return moment.duration(this.totalOnDuration.asMilliseconds() + (this.state === this.states.on ? moment().diff(this.lastStartDate) : 0))
-    }
-
-    timeLeft()
-    {
-        return moment.duration(this.interval.asMilliseconds() - this.timePassed().asMilliseconds())
-    }
-
-    tick()
-    {
-        this.lastStartDate = moment()
-        this.totalOnDuration = moment.duration(0)
-        this.timeout = setTimeout(this.tick.bind(this), this.interval.asMilliseconds())
-        this.emit('tick')
+        this.timeoutId = null
     }
 
     start()
     {
-        if (this.state === this.states.on)
+        if (!this.paused)
             return
-
-        this.lastStartDate = moment()
-        this.timeout = setTimeout(this.tick.bind(this), this.timeLeft())
-        this.state = this.states.on
+        
+        this.paused = false
+        this.tickDate = moment().add(this.timeLeft)
+        this.timeoutId = setTimeout(this.tick.bind(this), this.timeLeft.asMilliseconds())
         this.emit('start')
+    }
+
+    tick()
+    {
+        this.timeLeft = this.interval
+        this.tickDate = moment().add(this.timeLeft)
+        this.timeoutId = setTimeout(this.tick.bind(this), this.timeLeft.asMilliseconds())
+        this.emit('tick')
     }
 
     stop()
     {
-        if (this.state !== this.states.on)
+        if (this.paused)
             return
         
-        this.totalOnDuration.add(moment().diff(this.lastStartDate), 'ms')
-        clearTimeout(this.timeout)
-        this.timeout = undefined
-        this.state = this.states.off
+        this.paused = true
+        clearTimeout(this.timeoutId)
+        this.timeoutId = null
+        this.timeLeft = moment.duration(this.tickDate.diff(moment()))
         this.emit('stop')
     }
 }

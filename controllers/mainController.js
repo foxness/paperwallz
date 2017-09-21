@@ -6,32 +6,29 @@ let moment = require('moment')
 let Wallpaper = require('../models/wallpaper')
 let User = require('../models/user')
 let Reddit = require('../classes/reddit')
-let QueueState = require('../classes/queueState')
 let Timer = require('../classes/timer')
 
-let myTimer = new Timer(moment.duration(10, 'seconds'))
-
-let queueStates = {}
-
-myTimer.on('start', () =>
-{
-    console.log(`[${moment().format('mm:ss')}] timer started (timePassed: ${myTimer.timePassed().asSeconds()} s)`)
-})
-
-myTimer.on('tick', () =>
-{
-    console.log(`[${moment().format('mm:ss')}] timer tick (timePassed: ${myTimer.timePassed().asSeconds()} s)`)
-})
-
-myTimer.on('stop', () =>
-{
-    console.log(`[${moment().format('mm:ss')}] timer stopped (timePassed: ${myTimer.timePassed().asSeconds()} s)`)
-})
+let queueTimers = {}
 
 exports.queue = (req, res, next) =>
 {
-    if (!(req.user.id in queueStates))
-        queueStates[req.user.id] = new QueueState()
+    if (!(req.user.id in queueTimers))
+    {
+        let timer = new Timer(moment.duration(30, 's'))
+        timer.on('tick', () =>
+        {
+            console.log(`${req.user.name} TICK [${timer.timeLeft.asSeconds()}]`)
+        })
+        timer.on('start', () =>
+        {
+            console.log(`${req.user.name} START [${timer.timeLeft.asSeconds()}]`)
+        })
+        timer.on('stop', () =>
+        {
+            console.log(`${req.user.name} PAUSE [${timer.timeLeft.asSeconds()}]`)
+        })
+        queueTimers[req.user.id] = timer
+    }
     
     res.render('queue', { user: req.user })
 }
@@ -43,14 +40,14 @@ exports.queue_info = (req, res, next) =>
         if (err)
             throw new Error(`USER POPULATION ERROR: ${err}`)
 
-        let info = { queue: [], queuePaused: queueStates[result.id].paused }
+        let info = { queue: [], queuePaused: queueTimers[result.id].paused }
         for (let wallpaper of result.queue) // todo: use map()
             info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
 
         if (info.queuePaused)
-            info.queueTimeLeft = queueStates[result.id].timeLeft
+            info.queueTimeLeft = queueTimers[result.id].timeLeft.asMilliseconds()
         else
-            info.queueSubmissionDate = queueStates[result.id].submissionDate
+            info.queueSubmissionDate = queueTimers[result.id].tickDate.toDate()
         
         res.json(info)
     })
@@ -58,12 +55,14 @@ exports.queue_info = (req, res, next) =>
 
 exports.queue_start = (req, res, next) =>
 {
-    myTimer.start()
+    queueTimers[req.user.id].start()
+    res.end()
 }
 
 exports.queue_stop = (req, res, next) =>
 {
-    myTimer.stop()
+    queueTimers[req.user.id].stop()
+    res.end()
 }
 
 exports.wallpaper_add = (req, res, next) =>

@@ -52,25 +52,25 @@ $(() =>
     paperwallz.start = () =>
     {
         startTimer()
-        // $.ajax(
-        // {
-        //     method: 'POST',
-        //     url: '/queue/start'
-        //     // data: { id: id },
-        //     // success: (data) => { location.reload(true) }
-        // })
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/queue/start'
+            // data: { id: id },
+            // success: (data) => { location.reload(true) }
+        })
     }
 
     paperwallz.stop = () =>
     {
         stopTimer()
-        // $.ajax(
-        // {
-        //     method: 'POST',
-        //     url: '/queue/stop'
-        //     // data: { id: id },
-        //     // success: (data) => { location.reload(true) }
-        // })
+        $.ajax(
+        {
+            method: 'POST',
+            url: '/queue/stop'
+            // data: { id: id },
+            // success: (data) => { location.reload(true) }
+        })
     }
 
     paperwallz.fillQueue = () =>
