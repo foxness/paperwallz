@@ -7,10 +7,21 @@ let destinationDate = null
 let timerPaused = true
 let interval = null
 
-function updateTimer(distance)
+function updateTimer(paused_, interval_, info_)
 {
-    interval = timeLeft = moment.duration(distance)
-    updateTimerText()
+    interval = moment.duration(interval_)
+
+    if (paused_)
+    {
+        timeLeft = moment.duration(info_)
+        updateTimerText()
+    }
+    else
+    {
+        timerPaused = false
+        destinationDate = moment(new Date(info_))
+        intervalId = setInterval(tick, 1)
+    }
 }
 
 function updateTimerText()

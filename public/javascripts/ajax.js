@@ -125,5 +125,5 @@ $(() =>
 
     paperwallz.updateQueueInfo()
     paperwallz.fillQueue()
-    updateTimer(currentInfo.queueTimeLeft)
+    updateTimer(currentInfo.queuePaused, currentInfo.queueInterval, currentInfo.queuePaused ? currentInfo.queueTimeLeft : currentInfo.queueSubmissionDate)
 })
