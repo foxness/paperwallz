@@ -1,33 +1,34 @@
 
 const timerId = '#timer'
 
-let interval = null
-let dist = null
-let submissionDate = null
+let intervalId = null
+let timeLeft = null
+let destinationDate = null
 let timerPaused = true
+let interval = null
 
 function updateTimer(distance)
 {
-    dist = moment.duration(distance)
+    interval = timeLeft = moment.duration(distance)
     updateTimerText()
 }
 
 function updateTimerText()
 {
-    $(timerId).text(`${dist.days()}d ${dist.hours()}h ${dist.minutes()}m ${dist.seconds()}s ${dist.milliseconds()}ms`)
+    $(timerId).text(`${timeLeft.days()}d ${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s ${timeLeft.milliseconds()}ms`)
 }
 
 function tick()
 {
-    dist = moment.duration(submissionDate.diff(moment()))
-    updateTimerText()
+    timeLeft = moment.duration(destinationDate.diff(moment()))
 
-    if (dist.asMilliseconds() <= 0)
+    if (timeLeft.asMilliseconds() <= 0)
     {
-        timerPaused = true
-        clearInterval(interval)
-        $(timerId).text(`expired`)
+        destinationDate = moment().add(interval)
+        timeLeft = interval
     }
+
+    updateTimerText()
 }
 
 function startTimer()
@@ -36,8 +37,8 @@ function startTimer()
         return
     
     timerPaused = false
-    submissionDate = moment().add(dist)
-    interval = setInterval(tick, 1)
+    destinationDate = moment().add(timeLeft)
+    intervalId = setInterval(tick, 1)
 }
 
 function stopTimer()
@@ -46,5 +47,5 @@ function stopTimer()
         return
     
     timerPaused = true
-    clearInterval(interval)
+    clearInterval(intervalId)
 }
