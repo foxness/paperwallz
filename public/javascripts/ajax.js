@@ -4,6 +4,7 @@ $(() =>
     paperwallz = {}
 
     let currentInfo = null
+    let paused = true
 
     paperwallz.add_submit = () =>
     {
@@ -38,39 +39,22 @@ $(() =>
         })
     }
 
-    // paperwallz.post = (id) =>
-    // {
-    //     $.ajax(
-    //     {
-    //         method: 'POST',
-    //         url: '/queue/post',
-    //         data: { id: id }//,
-    //         // success: (data) => { location.reload(true) }
-    //     })
-    // }
-
-    paperwallz.start = () =>
+    paperwallz.toggle = () =>
     {
-        startTimer()
+        if (paused)
+            startTimer()
+        else
+            stopTimer()
+        
         $.ajax(
         {
             method: 'POST',
-            url: '/queue/start'
+            url: '/queue/' + (paused ? 'start' : 'stop'),
             // data: { id: id },
             // success: (data) => { location.reload(true) }
         })
-    }
 
-    paperwallz.stop = () =>
-    {
-        stopTimer()
-        $.ajax(
-        {
-            method: 'POST',
-            url: '/queue/stop'
-            // data: { id: id },
-            // success: (data) => { location.reload(true) }
-        })
+        paused = !paused
     }
 
     paperwallz.fillQueue = () =>
