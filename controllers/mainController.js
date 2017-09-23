@@ -14,19 +14,47 @@ exports.queue = (req, res, next) =>
 {
     if (!(req.user.id in queueTimers))
     {
-        let timer = new Timer(moment.duration(30, 's'))
+        let timer = new Timer(moment.duration(1, 'm')) // ALERT: CALLBACK HELL BELOW | TODO: USE ASYNC GOD DAMMIT
         timer.on('tick', () =>
         {
-            console.log(`${req.user.name} TICK [${timer.timeLeft.asSeconds()}]`)
+            // We look for the user again because they might have added new entries
+            // the queue in req.user.queue is not updated by the time the timer ticks
+            // the queue is at the state of when the req was requested
+            User.findById(req.user.id, (err, foundUser) =>
+            {
+                if (err)
+                    throw new Error("THIS IS QUITE IMPOSSIBLE1")
+                
+                Wallpaper.findById(foundUser.queue[0].toString(), (err, foundWallpaper) =>
+                {
+                    if (err)
+                        throw new Error("PRETTY SURE THIS IS IMPOSSIBLE")
+            
+                    let reddit = new Reddit(foundUser)
+                    reddit.post(foundWallpaper.url, foundWallpaper.title, (err, result) =>
+                    {
+                        if (err)
+                        {
+                            console.log(err)
+                            return
+                        }
+                        
+                        console.log(result)
+                    })
+                })
+            })
         })
+
         timer.on('start', () =>
         {
             console.log(`${req.user.name} START [${timer.timeLeft.asSeconds()}]`)
         })
+
         timer.on('stop', () =>
         {
             console.log(`${req.user.name} PAUSE [${timer.timeLeft.asSeconds()}]`)
         })
+
         queueTimers[req.user.id] = timer
     }
     
@@ -92,26 +120,6 @@ exports.wallpaper_add = (req, res, next) =>
 exports.wallpaper_delete = (req, res, next) =>
 {
     Wallpaper.findByIdAndRemove(req.body.id, (err, results) => { res.end() })
-}
-
-exports.wallpaper_post = (req, res, next) =>
-{
-    Wallpaper.findById(req.body.id, (err, result) =>
-    {
-        if (err)
-            return next(err)
-
-        let reddit = new Reddit(req.user)
-        reddit.post(result.url, result.title, (err, result) =>
-        {
-            if (err)
-                return next(err)
-
-            console.log(result)
-
-            res.end()
-        })
-    })
 }
 
 exports.login = (req, res, next) =>

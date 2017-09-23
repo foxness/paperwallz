@@ -25,6 +25,6 @@ router.post('/queue/stop', ensureAuthenticated, mainController.queue_stop)
 
 router.post('/queue/add', mainController.wallpaper_add) // todo: ensure authenticated
 router.post('/queue/delete', mainController.wallpaper_delete)
-router.post('/queue/post', mainController.wallpaper_post)
+// router.post('/queue/post', mainController.wallpaper_post)
 
 module.exports = router
