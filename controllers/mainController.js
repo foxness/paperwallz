@@ -39,7 +39,14 @@ exports.queue = (req, res, next) =>
                             return
                         }
                         
-                        console.log(result)
+                        foundWallpaper.completedUrl = result
+                        foundWallpaper.completionDate = new Date()
+                        foundWallpaper.save((err, result) =>
+                        {
+                            foundUser.completed.push(result)
+                            foundUser.queue.shift()
+                            foundUser.save()
+                        })
                     })
                 })
             })

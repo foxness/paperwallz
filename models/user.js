@@ -9,6 +9,7 @@ let UserSchema = Schema(
     accessToken: { type: String, required: false },
     accessTokenExpireDate: { type: Date, required: false },
     queue: { type: [{ type: Schema.Types.ObjectId, ref: 'Wallpaper' }] },
+    completed: { type: [{ type: Schema.Types.ObjectId, ref: 'Wallpaper' }] }
 })
 
 module.exports = mongoose.model('User', UserSchema)
