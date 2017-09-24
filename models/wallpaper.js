@@ -8,6 +8,16 @@ let WallpaperSchema = Schema(
     url: { type: String, required: true }
 })
 
+// WallpaperSchema.pre('update', (next) =>
+// {
+//     this.model('User').update(
+//         { },
+//         { '$pull': { 'queue': this._id } },
+//         { 'multi': true },
+//         next
+//     )
+// })
+
 // // Virtual for author's full name
 // WallpaperSchema
 // .virtual('name')

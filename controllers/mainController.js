@@ -119,7 +119,23 @@ exports.wallpaper_add = (req, res, next) =>
 
 exports.wallpaper_delete = (req, res, next) =>
 {
-    Wallpaper.findByIdAndRemove(req.body.id, (err, results) => { res.end() })
+    Wallpaper.findByIdAndRemove(req.body.id, (err, results) =>
+    {
+        if (err)
+            return next(err)
+        
+        User.update(
+            { 'queue': req.body.id },
+            { '$pull': { 'queue': req.body.id }},
+            (err, result) =>
+            {
+                if (err)
+                    return next(err)
+                
+                res.end()
+            }
+        )
+    })
 }
 
 exports.login = (req, res, next) =>
