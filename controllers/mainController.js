@@ -14,42 +14,61 @@ exports.queue = (req, res, next) =>
 {
     if (!(req.user.id in queueTimers))
     {
-        let timer = new Timer(moment.duration(1, 'm')) // ALERT: CALLBACK HELL BELOW | TODO: USE ASYNC GOD DAMMIT
+        let timer = new Timer(moment.duration(1, 'm'))
         timer.on('tick', () =>
         {
-            // We look for the user again because they might have added new entries
-            // the queue in req.user.queue is not updated by the time the timer ticks
-            // the queue is at the state of when the req was requested
-            User.findById(req.user.id, (err, foundUser) =>
-            {
-                if (err)
-                    throw new Error("THIS IS QUITE IMPOSSIBLE1")
-                
-                Wallpaper.findById(foundUser.queue[0].toString(), (err, foundWallpaper) =>
+            async.waterfall(
+                [
+                    (callback) =>
+                    {
+                        // the queue in req.user.queue is not updated by the time the timer ticks
+                        // so we update our user to get current queue items
+
+                        User.findById(req.user.id, callback)
+                    },
+
+                    (foundUser, callback) =>
+                    {
+                        Wallpaper.findById(foundUser.queue[0].toString(), (err, foundWallpaper) =>
+                        {
+                            callback(err, foundUser, foundWallpaper)
+                        })
+                    },
+
+                    (foundUser, foundWallpaper, callback) =>
+                    {
+                        let reddit = new Reddit(foundUser)
+                        reddit.post(foundWallpaper.url, foundWallpaper.title, (err, completedUrl) =>
+                        {
+                            callback(err, foundUser, foundWallpaper, completedUrl)
+                        })
+                    },
+
+                    (foundUser, foundWallpaper, completedUrl, callback) =>
+                    {
+                        foundWallpaper.completedUrl = completedUrl
+                        foundWallpaper.completionDate = new Date()
+                        foundWallpaper.save((err, foundWallpaper_) =>
+                        {
+                            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
+                            callback(err, foundUser, foundWallpaper_)
+                        })
+                    },
+
+                    (foundUser, foundWallpaper, callback) =>
+                    {
+                        foundUser.completed.push(foundWallpaper)
+                        foundUser.queue.shift()
+                        foundUser.save(callback)
+                    }
+                ],
+                (err, results) =>
                 {
                     if (err)
-                        throw new Error("PRETTY SURE THIS IS IMPOSSIBLE")
-            
-                    let reddit = new Reddit(foundUser)
-                    reddit.post(foundWallpaper.url, foundWallpaper.title, (err, result) =>
-                    {
-                        if (err)
-                        {
-                            console.log(err)
-                            return
-                        }
-                        
-                        foundWallpaper.completedUrl = result
-                        foundWallpaper.completionDate = new Date()
-                        foundWallpaper.save((err, result) =>
-                        {
-                            foundUser.completed.push(result)
-                            foundUser.queue.shift()
-                            foundUser.save()
-                        })
-                    })
+                        throw err
+        
+                    res.end()
                 })
-            })
         })
 
         timer.on('start', () =>
@@ -126,23 +145,29 @@ exports.wallpaper_add = (req, res, next) =>
 
 exports.wallpaper_delete = (req, res, next) =>
 {
-    Wallpaper.findByIdAndRemove(req.body.id, (err, results) =>
-    {
-        if (err)
-            return next(err)
-        
-        User.update(
-            { 'queue': req.body.id },
-            { '$pull': { 'queue': req.body.id }},
-            (err, result) =>
+    async.parallel(
+        [
+            (callback) =>
             {
-                if (err)
-                    return next(err)
-                
-                res.end()
+                Wallpaper.findByIdAndRemove(req.body.id, callback)
+            },
+
+            (callback) =>
+            {
+                User.update(
+                    { 'queue': req.body.id },
+                    { '$pull': { 'queue': req.body.id }},
+                    callback
+                )
             }
-        )
-    })
+        ],
+        (err, results) =>
+        {
+            if (err)
+                return next(err)
+
+            res.end()
+        })
 }
 
 exports.login = (req, res, next) =>
@@ -186,5 +211,4 @@ exports.logout = (req, res, next) =>
 exports.index = (req, res, next) =>
 {
     res.redirect('/login')
-    // res.render('index', { user: getPopulatedUser(req) })
 }
