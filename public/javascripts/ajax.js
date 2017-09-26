@@ -71,15 +71,30 @@ $(() =>
             headRow.append($('<th/>').text('Actions'))
             table.append(headRow)
 
+            let remainingItemCount = currentInfo.queue.length + currentInfo.queueCompleted.length
             for (let i = currentInfo.queue.length - 1; i >= 0; --i)
             {
                 let r = currentInfo.queue[i]
                 let row = $('<tr/>')
-                row.append($('<td/>').text(currentInfo.queue.length - i))
+                row.append($('<td/>').text(remainingItemCount--))
                 row.append($('<td/>').text(r.title))
                 row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
                 row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `paperwallz.delete('${r.id}')` }).text('Delete')))
                 table.append(row)
+            }
+
+            if (currentInfo.queueCompleted.length > 0)
+            {
+                for (let i = currentInfo.queueCompleted.length - 1; i >= 0; --i)
+                {
+                    let r = currentInfo.queueCompleted[i]
+                    let row = $('<tr/>').addClass('completed')
+                    row.append($('<td/>').text(remainingItemCount--))
+                    row.append($('<td/>').text(r.title))
+                    row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
+                    row.append($('<td/>').append($('<a/>').attr({ 'href': r.completedUrl }).text('Open Post')))
+                    table.append(row)
+                }
             }
 
             element = table

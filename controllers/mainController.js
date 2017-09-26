@@ -89,22 +89,25 @@ exports.queue = (req, res, next) =>
 
 exports.queue_info = (req, res, next) =>
 {
-    req.user.populate('queue', (err, result) =>
+    User.findById(req.user.id).populate('queue').populate('completed').exec((err, result) =>
     {
         if (err)
             throw new Error(`USER POPULATION ERROR: ${err}`)
 
-        let info = { queue: [], queuePaused: queueTimers[result.id].paused }
+        let info = { queue: [], queueCompleted: [], queuePaused: queueTimers[result.id].paused }
         for (let wallpaper of result.queue) // todo: use map()
             info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
         
+        for (let wallpaper of result.completed) // todo: use map()
+            info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, completedUrl: wallpaper.completedUrl })
+
         info.queueInterval = queueTimers[result.id].interval.asMilliseconds()
         
         if (info.queuePaused)
             info.queueTimeLeft = queueTimers[result.id].timeLeft.asMilliseconds()
         else
             info.queueSubmissionDate = queueTimers[result.id].tickDate.toDate()
-        
+
         res.json(info)
     })
 }
