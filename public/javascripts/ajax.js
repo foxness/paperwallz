@@ -71,15 +71,16 @@ $(() =>
             headRow.append($('<th/>').text('Actions'))
             table.append(headRow)
 
-            $.each(currentInfo.queue, (rowIndex, r) =>
+            for (let i = currentInfo.queue.length - 1; i >= 0; --i)
             {
+                let r = currentInfo.queue[i]
                 let row = $('<tr/>')
-                row.append($('<td/>').text(rowIndex + 1))
+                row.append($('<td/>').text(currentInfo.queue.length - i))
                 row.append($('<td/>').text(r.title))
                 row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
                 row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `paperwallz.delete('${r.id}')` }).text('Delete')))
                 table.append(row)
-            })
+            }
 
             element = table
         }
