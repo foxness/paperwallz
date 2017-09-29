@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
-const globals = require('./globals')
+const Globals = require('./Globals')
 
-const wss = new WebSocket.Server({ server: globals.httpServer })
+const wss = new WebSocket.Server({ server: Globals.httpServer })
 
 wss.on('connection', (connection) =>
 {

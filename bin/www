@@ -7,7 +7,7 @@
 let app = require('../app')
 let debug = require('debug')('paperwallz:server')
 let http = require('http')
-let globals = require('../classes/globals')
+let Globals = require('../classes/Globals')
 
 /**
  * Get port from environment and store in Express.
@@ -22,7 +22,7 @@ app.set('port', port)
 
 let server = http.createServer(app)
 
-globals.httpServer = server
+Globals.httpServer = server
 
 /**
  * Listen on provided port, on all network interfaces.

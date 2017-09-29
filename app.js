@@ -52,7 +52,6 @@ passport.use(new RedditStrategy(
 
                     return done(null, result)
                 })
-
             }
             else
             {
@@ -64,12 +63,12 @@ passport.use(new RedditStrategy(
                     accessTokenExpireDate: tokenExpire,
                 })
 
-                user.save((err) =>
+                user.save((err, result) =>
                 {
                     if (err)
                         return done(err)
 
-                    return done(null, user)
+                    return done(null, result)
                 })
             }
         })
