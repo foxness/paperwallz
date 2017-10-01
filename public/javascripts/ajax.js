@@ -123,4 +123,10 @@ $(() =>
     paperwallz.updateQueueInfo()
     paperwallz.fillQueue()
     updateTimer(currentInfo.queuePaused, currentInfo.queueInterval, currentInfo.queuePaused ? currentInfo.queueTimeLeft : currentInfo.queueSubmissionDate)
+
+    let ws = new WebSocket('ws://localhost')
+    ws.onopen = (event) =>
+    {
+        ws.send('hello boi');
+    }
 })

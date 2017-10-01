@@ -3,7 +3,7 @@ const Globals = require('./Globals')
 
 const wss = new WebSocket.Server({ server: Globals.httpServer })
 
-wss.on('connection', (connection) =>
+wss.on('connection', (connection, req) =>
 {
     connection.on('message', (message) =>
     {
@@ -12,3 +12,5 @@ wss.on('connection', (connection) =>
 
     connection.send('something')
 })
+
+module.exports = wss
