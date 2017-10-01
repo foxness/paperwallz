@@ -8,8 +8,18 @@ let User = require('../models/user')
 let Timer = require('../classes/timer')
 let Globals = require('../classes/globals')
 
+const cookieName = 'superSecretCookie1337'
+
 exports.queue = (req, res, next) =>
 {
+    if (!Globals.users[req.user.id].customSessionCookieSet
+        || !req.cookies[cookieName]
+        || req.cookies[cookieName] != Globals.users[req.user.id].customSessionCookie)
+    {
+        res.cookie(cookieName, Globals.users[req.user.id].customSessionCookie, { maxAge: 1000*60*60*24*365 })
+        Globals.users[req.user.id].customSessionCookieSet = true
+    }
+    
     res.render('queue', { user: req.user })
 }
 

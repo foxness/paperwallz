@@ -120,6 +120,24 @@ $(() =>
         })
     }
 
+    paperwallz.getCookie = (cname) =>
+    {
+        let name = cname + '='
+        let decodedCookie = decodeURIComponent(document.cookie)
+        let ca = decodedCookie.split(';')
+        for (let i = 0; i < ca.length; i++)
+        {
+            let c = ca[i]
+            while (c.charAt(0) == ' ')
+                c = c.substring(1)
+
+            if (c.indexOf(name) == 0)
+                return c.substring(name.length, c.length)
+        }
+
+        return ''
+    }
+
     paperwallz.updateQueueInfo()
     paperwallz.fillQueue()
     updateTimer(currentInfo.queuePaused, currentInfo.queueInterval, currentInfo.queuePaused ? currentInfo.queueTimeLeft : currentInfo.queueSubmissionDate)
@@ -127,6 +145,6 @@ $(() =>
     let ws = new WebSocket('ws://localhost')
     ws.onopen = (event) =>
     {
-        ws.send('hello boi');
+        ws.send(JSON.stringify({ type: 'cookie', value: paperwallz.getCookie('superSecretCookie1337') }))
     }
 })

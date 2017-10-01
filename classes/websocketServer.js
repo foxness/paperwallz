@@ -1,15 +1,44 @@
-const WebSocket = require('ws');
-const Globals = require('./Globals')
+let WebSocket = require('ws')
+let Globals = require('./globals')
 
-const wss = new WebSocket.Server({ server: Globals.httpServer })
+let wss = new WebSocket.Server({ server: Globals.httpServer })
 
 wss.on('connection', (connection, req) =>
 {
+    let firstMessageReceived = false
+    let userId = null
+
     connection.on('message', (message) =>
     {
+        let json = JSON.parse(message)
+
+        if (!firstMessageReceived)
+        {
+            if (json.type == 'cookie' && json.value)
+            {
+                for (userId_ in Globals.users)
+                {
+                    if (json.value === Globals.users[userId_].customSessionCookie)
+                    {
+                        userId = userId_
+                        Globals.users[userId].wsConnection = connection
+                        break
+                    }
+                }
+            }
+
+            if (!userId)
+            {
+                connection.terminate()
+                return
+            }
+
+            firstMessageReceived = true
+        }
+
         console.log('received: %s', message)
     })
-
+    
     connection.send('something')
 })
 
