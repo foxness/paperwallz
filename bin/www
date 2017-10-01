@@ -7,7 +7,7 @@
 let app = require('../app')
 let debug = require('debug')('paperwallz:server')
 let http = require('http')
-let Globals = require('../classes/Globals')
+let Globals = require('../classes/globals')
 
 /**
  * Get port from environment and store in Express.
