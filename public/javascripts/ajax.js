@@ -142,9 +142,18 @@ $(() =>
     paperwallz.fillQueue()
     updateTimer(currentInfo.queuePaused, currentInfo.queueInterval, currentInfo.queuePaused ? currentInfo.queueTimeLeft : currentInfo.queueSubmissionDate)
 
+    let waitingForResponse = false
     let ws = new WebSocket('ws://localhost')
+
+    ws.onmessage = (event) =>
+    {
+        // if (waitingForResponse)
+        console.log(event)
+    }
+
     ws.onopen = (event) =>
     {
         ws.send(JSON.stringify({ type: 'cookie', value: paperwallz.getCookie('superSecretCookie1337') }))
+        ws.send(JSON.stringify({ type: 'need', value: 'queueInfo' }))
     }
 })
