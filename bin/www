@@ -1,64 +1,20 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
-
 let app = require('../app')
 let debug = require('debug')('paperwallz:server')
 let http = require('http')
 let Globals = require('../classes/globals')
 
-/**
- * Get port from environment and store in Express.
- */
-
-let port = 80 // normalizePort(process.env.PORT || '3000')
+const port = 80
 app.set('port', port)
 
-/**
- * Create HTTP server.
- */
-
 let server = http.createServer(app)
-
 Globals.httpServer = server
 let wss = require('../classes/websocketServer') // this should be enough to make it work already (no need to 'start' it)
-
-/**
- * Listen on provided port, on all network interfaces.
- */
 
 server.listen(port)
 server.on('error', onError)
 server.on('listening', onListening)
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-function normalizePort(val)
-{
-    let port = parseInt(val, 10)
-
-    if (isNaN(port))
-    {
-        // named pipe
-        return val
-    }
-
-    if (port >= 0)
-    {
-        // port number
-        return port
-    }
-
-    return false
-}
-
-/**
- * Event listener for HTTP server "error" event.
- */
 
 function onError(error)
 {
@@ -69,7 +25,6 @@ function onError(error)
         'Pipe ' + port :
         'Port ' + port
 
-    // handle specific listen errors with friendly messages
     switch (error.code)
     {
         case 'EACCES':
@@ -84,10 +39,6 @@ function onError(error)
             throw error
     }
 }
-
-/**
- * Event listener for HTTP server "listening" event.
- */
 
 function onListening()
 {
