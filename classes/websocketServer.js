@@ -91,7 +91,7 @@ let deleteWallpaper = (id, callback) =>
         })
 }
 
-wss.sendQueueInfoToUser = (userId, callback) =>
+Globals.sendQueueInfoToUser = (userId, callback, asd) =>
 {
     getQueueInfo(userId, (err, result) =>
     {
@@ -142,7 +142,7 @@ wss.on('connection', (connection, req) =>
 
         if (json.type == 'need' && json.value == 'queueInfo')
         {
-            wss.sendQueueInfoToUser(userId, (err) =>
+            Globals.sendQueueInfoToUser(userId, (err) =>
             {
                 if (err)
                     throw err
@@ -168,7 +168,7 @@ wss.on('connection', (connection, req) =>
 
                     (callback) =>
                     {
-                        wss.sendQueueInfoToUser(userId, callback)
+                        Globals.sendQueueInfoToUser(userId, callback)
                     }
                 ],
                 (err, results) =>
@@ -188,7 +188,7 @@ wss.on('connection', (connection, req) =>
 
                     (callback) =>
                     {
-                        wss.sendQueueInfoToUser(userId, callback)
+                        Globals.sendQueueInfoToUser(userId, callback)
                     }
                 ],
                 (err, results) =>

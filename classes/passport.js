@@ -76,7 +76,15 @@ let userRuntimeFirstSetup = (user) =>
                     {
                         foundUser.completed.push(foundWallpaper)
                         foundUser.queue.shift()
-                        foundUser.save(callback)
+                        foundUser.save((err, result) =>
+                        {
+                            callback(err) // this is needed, trust me
+                        })
+                    },
+
+                    (callback) =>
+                    {
+                        Globals.sendQueueInfoToUser(user.id, callback)
                     }
                 ],
                 (err, results) =>
