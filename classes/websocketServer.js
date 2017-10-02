@@ -1,6 +1,8 @@
 let WebSocket = require('ws')
+let async = require('async')
 let Globals = require('./globals')
 let User = require('../models/user')
+let Wallpaper = require('../models/wallpaper')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -27,8 +29,42 @@ let getQueueInfo = (userId, callback) =>
         else
             info.queueSubmissionDate = timer.tickDate.toDate()
 
-        callback(null, { type: 'queueInfo', value: info })
+        callback(null, info)
     })
+}
+
+let addWallpaper = (userId, title, url, callback) =>
+{
+    let wallpaper = new Wallpaper({ title: title, url: url })
+
+    async.waterfall(
+        [
+            (callback_) =>
+            {
+                wallpaper.save((err, result) =>
+                {
+                    callback_(err, result) // i don't even know why i have to do this explicitly,
+                })                         // simply passing the callback_ to save() won't work for some reason
+            },
+
+            (wallpaper_, callback_) =>
+            {
+                User.findById(userId, (err, user) =>
+                {
+                    callback_(err, user, wallpaper_)
+                })
+            },
+
+            (user, wallpaper_, callback_) =>
+            {
+                user.queue.push(wallpaper_)
+                user.save(callback_)
+            }
+        ],
+        (err, results) =>
+        {
+            callback(err)
+        })
 }
 
 wss.on('connection', (connection, req) =>
@@ -70,12 +106,15 @@ wss.on('connection', (connection, req) =>
         {
             getQueueInfo(userId, (err, result) =>
             {
-                let sent = JSON.stringify(result)
+                if (err)
+                    throw err
+
+                let sent = JSON.stringify({ type: 'queueInfo', value: result })
                 connection.send(sent)
                 console.log(`sent: ${sent}`)
             })
         }
-        else if (json.type == 'queue')
+        else if (json.type == 'queueToggle')
         {
             if (json.value == 'start')
                 Globals.users[userId].timer.start()
@@ -84,8 +123,34 @@ wss.on('connection', (connection, req) =>
             else
                 throw new Error() // ACHTUNG: HACKER DETECTED
         }
+        else if (json.type == 'queueAdd')
+        {
+            async.waterfall(
+                [
+                    (callback) =>
+                    {
+                        addWallpaper(userId, json.value.title, json.value.url, callback)
+                    },
+
+                    (callback) =>
+                    {
+                        getQueueInfo(userId, callback)
+                    },
+
+                    (queueInfo, callback) =>
+                    {
+                        let sent = JSON.stringify({ type: 'queueInfo', value: queueInfo })
+                        connection.send(sent)
+                        console.log(`sent: ${sent}`)
+                    }
+                ],
+                (err, results) =>
+                {
+                    if (err)
+                        throw err
+                })
+        }
     })
-    // connection.send('something')
 })
 
 module.exports = wss

@@ -1,11 +1,9 @@
 let async = require('async')
 let crypto = require('crypto')
-let moment = require('moment')
 
 let passport = require('../classes/passport')
 let Wallpaper = require('../models/wallpaper')
 let User = require('../models/user')
-let Timer = require('../classes/timer')
 let Globals = require('../classes/globals')
 
 const cookieName = 'superSecretCookie1337'
@@ -21,28 +19,6 @@ exports.queue = (req, res, next) =>
     }
     
     res.render('queue', { user: req.user })
-}
-
-exports.wallpaper_add = (req, res, next) =>
-{
-    let wallpaper = new Wallpaper({ title: req.body.title, url: req.body.url })
-
-    async.series(
-        [
-            (callback) => { wallpaper.save(callback) },
-            (callback) =>
-            {
-                req.user.queue.push(wallpaper)
-                req.user.save(callback)
-            }
-        ],
-        (err, results) =>
-        {
-            if (err)
-                return next(err)
-
-            res.end()
-        })
 }
 
 exports.wallpaper_delete = (req, res, next) =>

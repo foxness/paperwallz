@@ -19,7 +19,6 @@ router.get('/logout', mainController.logout)
 
 router.get('/queue', ensureAuthenticated, mainController.queue)
 
-router.post('/queue/add', mainController.wallpaper_add) // todo: ensure authenticated
 router.post('/queue/delete', mainController.wallpaper_delete)
 // router.post('/queue/post', mainController.wallpaper_post)
 

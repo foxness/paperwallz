@@ -10,16 +10,7 @@ $(() =>
         let title = $('#add_title').val().trim()
         let url = $('#add_url').val().trim()
 
-        $.ajax(
-        {
-            method: 'POST',
-            url: '/queue/add',
-            data: { title: title, url: url },
-            success: (data) =>
-            {
-                paperwallz.updateQueueInfo()
-            }
-        })
+        ws.send(JSON.stringify({ type: 'queueAdd', value: { title: title, url: url } }))
     }
 
     paperwallz.delete = (id) =>
@@ -43,7 +34,7 @@ $(() =>
         else
             stopTimer()
 
-        ws.send(JSON.stringify({ type: 'queue', value: (paused ? 'start' : 'stop') }))
+        ws.send(JSON.stringify({ type: 'queueToggle', value: (paused ? 'start' : 'stop') }))
 
         paused = !paused
     }
