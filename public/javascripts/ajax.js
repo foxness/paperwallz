@@ -42,14 +42,8 @@ $(() =>
             startTimer()
         else
             stopTimer()
-        
-        $.ajax(
-        {
-            method: 'POST',
-            url: '/queue/' + (paused ? 'start' : 'stop'),
-            // data: { id: id },
-            // success: (data) => { location.reload(true) }
-        })
+
+        ws.send(JSON.stringify({ type: 'queue', value: (paused ? 'start' : 'stop') }))
 
         paused = !paused
     }

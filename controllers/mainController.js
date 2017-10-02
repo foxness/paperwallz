@@ -23,18 +23,6 @@ exports.queue = (req, res, next) =>
     res.render('queue', { user: req.user })
 }
 
-exports.queue_start = (req, res, next) =>
-{
-    Globals.users[req.user.id].timer.start()
-    res.end()
-}
-
-exports.queue_stop = (req, res, next) =>
-{
-    Globals.users[req.user.id].timer.stop()
-    res.end()
-}
-
 exports.wallpaper_add = (req, res, next) =>
 {
     let wallpaper = new Wallpaper({ title: req.body.title, url: req.body.url })

@@ -75,6 +75,15 @@ wss.on('connection', (connection, req) =>
                 console.log(`sent: ${sent}`)
             })
         }
+        else if (json.type == 'queue')
+        {
+            if (json.value == 'start')
+                Globals.users[userId].timer.start()
+            else if (json.value == 'stop')
+                Globals.users[userId].timer.stop()
+            else
+                throw new Error() // ACHTUNG: HACKER DETECTED
+        }
     })
     // connection.send('something')
 })
