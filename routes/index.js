@@ -16,10 +16,6 @@ router.get('/login', mainController.login)
 router.get('/auth/reddit', mainController.auth_reddit)
 router.get('/callback', mainController.reddit_callback)
 router.get('/logout', mainController.logout)
-
 router.get('/queue', ensureAuthenticated, mainController.queue)
-
-router.post('/queue/delete', mainController.wallpaper_delete)
-// router.post('/queue/post', mainController.wallpaper_post)
 
 module.exports = router

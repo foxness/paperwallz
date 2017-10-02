@@ -15,16 +15,7 @@ $(() =>
 
     paperwallz.delete = (id) =>
     {
-        $.ajax(
-        {
-            method: 'POST',
-            url: '/queue/delete',
-            data: { id: id },
-            success: (data) =>
-            {
-                paperwallz.updateQueueInfo()
-            }
-        })
+        ws.send(JSON.stringify({ type: 'queueDelete', value: { id: id } }))
     }
 
     paperwallz.toggle = () =>

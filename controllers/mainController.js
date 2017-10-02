@@ -2,8 +2,6 @@ let async = require('async')
 let crypto = require('crypto')
 
 let passport = require('../classes/passport')
-let Wallpaper = require('../models/wallpaper')
-let User = require('../models/user')
 let Globals = require('../classes/globals')
 
 const cookieName = 'superSecretCookie1337'
@@ -19,33 +17,6 @@ exports.queue = (req, res, next) =>
     }
     
     res.render('queue', { user: req.user })
-}
-
-exports.wallpaper_delete = (req, res, next) =>
-{
-    async.parallel(
-        [
-            (callback) =>
-            {
-                Wallpaper.findByIdAndRemove(req.body.id, callback)
-            },
-
-            (callback) =>
-            {
-                User.update(
-                    { 'queue': req.body.id },
-                    { '$pull': { 'queue': req.body.id }},
-                    callback
-                )
-            }
-        ],
-        (err, results) =>
-        {
-            if (err)
-                return next(err)
-
-            res.end()
-        })
 }
 
 exports.login = (req, res, next) =>

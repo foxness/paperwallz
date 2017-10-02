@@ -67,6 +67,30 @@ let addWallpaper = (userId, title, url, callback) =>
         })
 }
 
+let deleteWallpaper = (id, callback) =>
+{
+    async.parallel(
+        [
+            (callback_) =>
+            {
+                Wallpaper.findByIdAndRemove(id, callback_)
+            },
+
+            (callback_) =>
+            {
+                User.update(
+                    { 'queue': id },
+                    { '$pull': { 'queue': id }},
+                    callback_
+                )
+            }
+        ],
+        (err, results) =>
+        {
+            callback(err)
+        })
+}
+
 wss.on('connection', (connection, req) =>
 {
     let firstMessageReceived = false
@@ -130,6 +154,33 @@ wss.on('connection', (connection, req) =>
                     (callback) =>
                     {
                         addWallpaper(userId, json.value.title, json.value.url, callback)
+                    },
+
+                    (callback) =>
+                    {
+                        getQueueInfo(userId, callback)
+                    },
+
+                    (queueInfo, callback) =>
+                    {
+                        let sent = JSON.stringify({ type: 'queueInfo', value: queueInfo })
+                        connection.send(sent)
+                        console.log(`sent: ${sent}`)
+                    }
+                ],
+                (err, results) =>
+                {
+                    if (err)
+                        throw err
+                })
+        }
+        else if (json.type == 'queueDelete')
+        {
+            async.waterfall(
+                [
+                    (callback) =>
+                    {
+                        deleteWallpaper(json.value.id, callback)
                     },
 
                     (callback) =>
