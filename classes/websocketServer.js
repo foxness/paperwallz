@@ -91,6 +91,20 @@ let deleteWallpaper = (id, callback) =>
         })
 }
 
+wss.sendQueueInfoToUser = (userId, callback) =>
+{
+    getQueueInfo(userId, (err, result) =>
+    {
+        if (err)
+            return callback(err)
+
+        let sent = JSON.stringify({ type: 'queueInfo', value: result })
+        Globals.users[userId].wsConnection.send(sent)
+        console.log(`sent: ${sent}`)
+        callback()
+    })
+}
+
 wss.on('connection', (connection, req) =>
 {
     let firstMessageReceived = false
@@ -128,14 +142,10 @@ wss.on('connection', (connection, req) =>
 
         if (json.type == 'need' && json.value == 'queueInfo')
         {
-            getQueueInfo(userId, (err, result) =>
+            wss.sendQueueInfoToUser(userId, (err) =>
             {
                 if (err)
                     throw err
-
-                let sent = JSON.stringify({ type: 'queueInfo', value: result })
-                connection.send(sent)
-                console.log(`sent: ${sent}`)
             })
         }
         else if (json.type == 'queueToggle')
@@ -158,14 +168,7 @@ wss.on('connection', (connection, req) =>
 
                     (callback) =>
                     {
-                        getQueueInfo(userId, callback)
-                    },
-
-                    (queueInfo, callback) =>
-                    {
-                        let sent = JSON.stringify({ type: 'queueInfo', value: queueInfo })
-                        connection.send(sent)
-                        console.log(`sent: ${sent}`)
+                        wss.sendQueueInfoToUser(userId, callback)
                     }
                 ],
                 (err, results) =>
@@ -185,14 +188,7 @@ wss.on('connection', (connection, req) =>
 
                     (callback) =>
                     {
-                        getQueueInfo(userId, callback)
-                    },
-
-                    (queueInfo, callback) =>
-                    {
-                        let sent = JSON.stringify({ type: 'queueInfo', value: queueInfo })
-                        connection.send(sent)
-                        console.log(`sent: ${sent}`)
+                        wss.sendQueueInfoToUser(userId, callback)
                     }
                 ],
                 (err, results) =>
