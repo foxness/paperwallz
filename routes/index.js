@@ -18,7 +18,6 @@ router.get('/callback', mainController.reddit_callback)
 router.get('/logout', mainController.logout)
 
 router.get('/queue', ensureAuthenticated, mainController.queue)
-router.get('/queue/info', ensureAuthenticated, mainController.queue_info)
 
 router.post('/queue/start', ensureAuthenticated, mainController.queue_start)
 router.post('/queue/stop', ensureAuthenticated, mainController.queue_stop)

@@ -2,9 +2,8 @@ $(() =>
 {
     const queueInfoClass = 'queueInfo'
     paperwallz = {}
-
-    let currentInfo = null
     let paused = true
+    let ws = null
 
     paperwallz.add_submit = () =>
     {
@@ -19,7 +18,6 @@ $(() =>
             success: (data) =>
             {
                 paperwallz.updateQueueInfo()
-                paperwallz.fillQueue()
             }
         })
     }
@@ -34,7 +32,6 @@ $(() =>
             success: (data) =>
             {
                 paperwallz.updateQueueInfo()
-                paperwallz.fillQueue()
             }
         })
     }
@@ -57,11 +54,11 @@ $(() =>
         paused = !paused
     }
 
-    paperwallz.fillQueue = () =>
+    paperwallz.fillQueue = (queueInfo) =>
     {
         let element = null
 
-        if (currentInfo.queue.length > 0)
+        if (queueInfo.queue.length > 0)
         {
             let table = $('<table/>').addClass(queueInfoClass)
             let headRow = $('<tr/>')
@@ -71,10 +68,10 @@ $(() =>
             headRow.append($('<th/>').text('Actions'))
             table.append(headRow)
 
-            let remainingItemCount = currentInfo.queue.length + currentInfo.queueCompleted.length
-            for (let i = currentInfo.queue.length - 1; i >= 0; --i)
+            let remainingItemCount = queueInfo.queue.length + queueInfo.queueCompleted.length
+            for (let i = queueInfo.queue.length - 1; i >= 0; --i)
             {
-                let r = currentInfo.queue[i]
+                let r = queueInfo.queue[i]
                 let row = $('<tr/>')
                 row.append($('<td/>').text(remainingItemCount--))
                 row.append($('<td/>').text(r.title))
@@ -83,9 +80,9 @@ $(() =>
                 table.append(row)
             }
 
-            for (let i = currentInfo.queueCompleted.length - 1; i >= 0; --i)
+            for (let i = queueInfo.queueCompleted.length - 1; i >= 0; --i)
             {   
-                let r = currentInfo.queueCompleted[i]
+                let r = queueInfo.queueCompleted[i]
                 let row = $('<tr/>').addClass('completed')
                 row.append($('<td/>').text(remainingItemCount--))
                 row.append($('<td/>').text(r.title))
@@ -107,17 +104,7 @@ $(() =>
 
     paperwallz.updateQueueInfo = () =>
     {
-        $.ajax(
-        {
-            type: 'GET',
-            url: '/queue/info',
-            dataType: 'json',
-            success: (info) =>
-            {
-                currentInfo = info
-            },
-            async: false
-        })
+        ws.send(JSON.stringify({ type: 'need', value: 'queueInfo' }))
     }
 
     paperwallz.getCookie = (cname) =>
@@ -138,22 +125,23 @@ $(() =>
         return ''
     }
 
-    paperwallz.updateQueueInfo()
-    paperwallz.fillQueue()
-    updateTimer(currentInfo.queuePaused, currentInfo.queueInterval, currentInfo.queuePaused ? currentInfo.queueTimeLeft : currentInfo.queueSubmissionDate)
-
-    let waitingForResponse = false
-    let ws = new WebSocket('ws://localhost')
-
+    ws = new WebSocket('ws://localhost')
+    
     ws.onmessage = (event) =>
     {
-        // if (waitingForResponse)
-        console.log(event)
+        let json = JSON.parse(event.data)
+
+        if (json.type == 'queueInfo')
+        {
+            let queueInfo = json.value
+            paperwallz.fillQueue(queueInfo)
+            updateTimer(queueInfo.queuePaused, queueInfo.queueInterval, queueInfo.queuePaused ? queueInfo.queueTimeLeft : queueInfo.queueSubmissionDate)
+        }
     }
 
     ws.onopen = (event) =>
     {
         ws.send(JSON.stringify({ type: 'cookie', value: paperwallz.getCookie('superSecretCookie1337') }))
-        ws.send(JSON.stringify({ type: 'need', value: 'queueInfo' }))
+        paperwallz.updateQueueInfo()
     }
 })

@@ -23,33 +23,6 @@ exports.queue = (req, res, next) =>
     res.render('queue', { user: req.user })
 }
 
-exports.queue_info = (req, res, next) =>
-{
-    User.findById(req.user.id).populate('queue').populate('completed').exec((err, result) =>
-    {
-        if (err)
-            throw new Error(`USER POPULATION ERROR: ${err}`)
-
-        let timer = Globals.users[result.id].timer
-        
-        let info = { queue: [], queueCompleted: [], queuePaused: timer.paused }
-        for (let wallpaper of result.queue) // todo: use map()
-            info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
-        
-        for (let wallpaper of result.completed) // todo: use map()
-            info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, completedUrl: wallpaper.completedUrl })
-
-        info.queueInterval = timer.interval.asMilliseconds()
-        
-        if (info.queuePaused)
-            info.queueTimeLeft = timer.timeLeft.asMilliseconds()
-        else
-            info.queueSubmissionDate = timer.tickDate.toDate()
-
-        res.json(info)
-    })
-}
-
 exports.queue_start = (req, res, next) =>
 {
     Globals.users[req.user.id].timer.start()

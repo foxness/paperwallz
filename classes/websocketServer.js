@@ -27,7 +27,7 @@ let getQueueInfo = (userId, callback) =>
         else
             info.queueSubmissionDate = timer.tickDate.toDate()
 
-        callback(null, info)
+        callback(null, { type: 'queueInfo', value: info })
     })
 }
 
