@@ -34,7 +34,7 @@ $(() =>
     {
         let element = null
 
-        if (queueInfo.queue.length > 0)
+        if (queueInfo.queue.length + queueInfo.queueCompleted.length > 0)
         {
             let table = $('<table/>').attr('id', queueBox)
             let headRow = $('<tr/>')
