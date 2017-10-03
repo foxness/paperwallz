@@ -1,6 +1,6 @@
 $(() =>
 {
-    const queueInfoClass = 'queueBox'
+    const queueBox = 'queueBox'
     paperwallz = {}
     let paused = true
     let ws = null
@@ -36,7 +36,7 @@ $(() =>
 
         if (queueInfo.queue.length > 0)
         {
-            let table = $('<table/>').attr('id', queueInfoClass)
+            let table = $('<table/>').attr('id', queueBox)
             let headRow = $('<tr/>')
             headRow.append($('<th/>').text('#').attr('id', 'headNumber'))
             headRow.append($('<th/>').text('Title').attr('id', 'headTitle'))
@@ -71,10 +71,10 @@ $(() =>
         }
         else
         {
-            element = $('<p/>').attr('id', queueInfoClass).text('There are no wallpapers.')
+            element = $('<p/>').attr('id', queueBox).text('There are no wallpapers.')
         }
 
-        $(`.${queueInfoClass}`).remove()
+        $(`#${queueBox}`).remove()
         $('#main').append(element)
     }
 
