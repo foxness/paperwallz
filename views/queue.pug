@@ -2,27 +2,23 @@ doctype html
 html
   head
     title Paperwallz
+    link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Lato')
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js')
     script(src='/javascripts/timer.js')
     script(src='/javascripts/ajax.js')
   body
-    h1= user.name
-
-    span  
-    a(href='/logout') Log out
-    
-    br
-    br
-    p#timer
-    input#add_submit(type='button', onclick='paperwallz.toggle()', value='Toggle')
-    //- input#add_submit(type='button', onclick='paperwallz.stop()', value='Stop')
-    br
-    br
-
-    input#add_title(type='text', placeholder='Enter the title')
-    input#add_url(type='text', placeholder='Enter the url')
-    input#add_submit(type='button', onclick='paperwallz.add_submit()', value='Add')
-    br
-    br
+    div#main
+      div#userBox
+        div#userBoxInner
+          span#username= user.name
+          a#logout(href='/logout') Log out
+      div#timerBox
+        div#timerBoxInner
+          input#toggle(type='button', onclick='paperwallz.toggle()', value='Toggle')
+          p#timer
+      div#addBox
+        input#add_title(type='text', placeholder='Enter the title')
+        input#add_url(type='text', placeholder='Enter the url')
+        input#add_submit(type='button', onclick='paperwallz.add_submit()', value='Add')

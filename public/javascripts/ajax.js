@@ -1,6 +1,6 @@
 $(() =>
 {
-    const queueInfoClass = 'queueInfo'
+    const queueInfoClass = 'queueBox'
     paperwallz = {}
     let paused = true
     let ws = null
@@ -36,12 +36,12 @@ $(() =>
 
         if (queueInfo.queue.length > 0)
         {
-            let table = $('<table/>').addClass(queueInfoClass)
+            let table = $('<table/>').attr('id', queueInfoClass)
             let headRow = $('<tr/>')
-            headRow.append($('<th/>').text('#'))
-            headRow.append($('<th/>').text('Title'))
-            headRow.append($('<th/>').text('Link'))
-            headRow.append($('<th/>').text('Actions'))
+            headRow.append($('<th/>').text('#').attr('id', 'headNumber'))
+            headRow.append($('<th/>').text('Title').attr('id', 'headTitle'))
+            headRow.append($('<th/>').text('Link').attr('id', 'headLink'))
+            headRow.append($('<th/>').text('Actions').attr('id', 'headActions'))
             table.append(headRow)
 
             let remainingItemCount = queueInfo.queue.length + queueInfo.queueCompleted.length
@@ -50,7 +50,7 @@ $(() =>
                 let r = queueInfo.queue[i]
                 let row = $('<tr/>')
                 row.append($('<td/>').text(remainingItemCount--))
-                row.append($('<td/>').text(r.title))
+                row.append($('<td/>').text(r.title).addClass('titleElem'))
                 row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
                 row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `paperwallz.delete('${r.id}')` }).text('Delete')))
                 table.append(row)
@@ -61,7 +61,7 @@ $(() =>
                 let r = queueInfo.queueCompleted[i]
                 let row = $('<tr/>').addClass('completed')
                 row.append($('<td/>').text(remainingItemCount--))
-                row.append($('<td/>').text(r.title))
+                row.append($('<td/>').text(r.title).addClass('titleElem'))
                 row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
                 row.append($('<td/>').append($('<a/>').attr({ 'href': r.completedUrl }).text('Open Post')))
                 table.append(row)
@@ -71,11 +71,11 @@ $(() =>
         }
         else
         {
-            element = $('<p/>').addClass(queueInfoClass).text('There are no wallpapers.')
+            element = $('<p/>').attr('id', queueInfoClass).text('There are no wallpapers.')
         }
 
         $(`.${queueInfoClass}`).remove()
-        $('body').append(element)
+        $('#main').append(element)
     }
 
     paperwallz.updateQueueInfo = () =>

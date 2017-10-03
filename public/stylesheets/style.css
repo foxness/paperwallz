@@ -1,4 +1,137 @@
+* {
+  padding: 0;
+  margin: 0;
+  /* border: 1px solid rgb(129, 129, 129); */
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
 body {
+  font-family: 'Lato', sans-serif;
+  color: #525252;
+  /* background-color: #2a2e63; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input {
+  font-family: inherit;
+}
+
+#main {
+  width: 680px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#userBox {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+#userBoxInner {
+  margin-left: 20px;
+}
+
+#username {
+  font-size: 22pt;
+}
+
+#logout {
+  margin-left: 20px;
+}
+
+#timerBox {
+  width: 100%;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+}
+
+#timerBoxInner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#toggle {
+  padding: 12px;
+  /* height: 70px; */
+  /* width: 70px; */
+  /* padding-top: 10%; */
+  /* display: inline; */
+  /* margin-left: 20px; */
+}
+
+#timer {
+  font-size: 19pt;
+  display: inline-block;
+  width: 250px;
+  margin: auto;
+}
+
+#addBox {
+  width: 100%;
+}
+
+#add_title, #add_url, #add_submit {
+  margin: 20px 0px 20px 20px; /* no idea why doesn't 'margin: 20px' work */
+  /* margin: 20px; */
+  padding: 10px;
+}
+
+#queueBox {
+  width: 100%;
+}
+
+#headNumber {
+  width: 7%;
+}
+
+.titleElem {
+  padding-left: 10px;
+  text-align: left;
+}
+
+#headLink, #headActions {
+  width: 15%;
+}
+
+a {
+  color: #00B7FF;
+}
+
+tr {
+  text-align: center;
+  height: 30px;
+}
+
+td, th {
+  padding: 2px;
+}
+
+td {
+  border: 1px solid #B9B9B9;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.completed {
+  background-color: #F1F1F1;
+}
+
+/* body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
@@ -21,4 +154,4 @@ table {
 
 h1 {
   display: inline;
-}
+} */

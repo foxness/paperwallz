@@ -91,7 +91,7 @@ let deleteWallpaper = (id, callback) =>
         })
 }
 
-Globals.sendQueueInfoToUser = (userId, callback, asd) =>
+Globals.sendQueueInfoToUser = (userId, callback) =>
 {
     getQueueInfo(userId, (err, result) =>
     {
