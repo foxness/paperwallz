@@ -5,14 +5,9 @@
   box-sizing: border-box;
 }
 
-html, body {
-  height: 100%;
-}
-
 body {
   font-family: 'Lato', sans-serif;
   color: #525252;
-  /* background-color: #2a2e63; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -23,12 +18,10 @@ input {
 }
 
 #main {
+  padding-top: 60px;
   width: 680px;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  /* height: 100%; */
+  padding-bottom: 200px;
 }
 
 #userBox {
@@ -65,11 +58,6 @@ input {
 
 #toggle {
   padding: 12px;
-  /* height: 70px; */
-  /* width: 70px; */
-  /* padding-top: 10%; */
-  /* display: inline; */
-  /* margin-left: 20px; */
 }
 
 #timer {
@@ -134,24 +122,4 @@ table {
 /* body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-.completed {
-    background-color: #CFCFCF;
-}
-
-a {
-  color: #00B7FF;
-}
-
-table, th, td {
-   border: 1px solid black;
-}
-
-table {
-    border-collapse: collapse;
-}
-
-h1 {
-  display: inline;
-} */
+}*/
