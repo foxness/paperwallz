@@ -140,7 +140,7 @@ wss.on('connection', (connection, req) =>
 
         console.log(`received: ${message}`)
 
-        if (json.type == 'need' && json.value == 'queueInfo')
+        if (json.type == 'queueInfo')
         {
             Globals.sendQueueInfoToUser(userId, (err) =>
             {

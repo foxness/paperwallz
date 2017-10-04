@@ -80,7 +80,7 @@ $(() =>
 
     paperwallz.updateQueueInfo = () =>
     {
-        ws.send(JSON.stringify({ type: 'need', value: 'queueInfo' }))
+        ws.send(JSON.stringify({ type: 'queueInfo', value: null }))
     }
 
     paperwallz.getCookie = (cname) =>
