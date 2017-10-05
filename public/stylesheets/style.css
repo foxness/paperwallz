@@ -1,7 +1,7 @@
 * {
   padding: 0;
   margin: 0;
-  /* border: 1px solid rgb(129, 129, 129); */
+  border: 1px solid rgb(129, 129, 129);
   box-sizing: border-box;
 }
 
@@ -33,14 +33,31 @@ input {
 
 #userBoxInner {
   margin-left: 20px;
+  display: flex;
+  align-items: center;
 }
 
 #username {
+  /* display: block; */
   font-size: 22pt;
+}
+
+input[type=button] {
+  padding: 12px;
+  background-color: #E2E2E2;
+  color: inherit;
+  border-width: 0;
 }
 
 #logout {
   margin-left: 20px;
+  padding: 12px;
+  text-decoration: none;
+  color: inherit;
+  background-color: #E2E2E2;
+  font-size: 13.33px;
+  display: block;
+  /* border-width: 1px; */
 }
 
 #timerBox {
@@ -54,10 +71,6 @@ input {
   width: 100%;
   display: flex;
   align-items: center;
-}
-
-#toggle {
-  padding: 12px;
 }
 
 #timer {
@@ -74,7 +87,7 @@ input {
 #add_title, #add_url, #add_submit {
   margin: 20px 0px 20px 20px; /* no idea why doesn't 'margin: 20px' work */
   /* margin: 20px; */
-  padding: 10px;
+  padding: 12px;
 }
 
 #queueBox {
