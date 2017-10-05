@@ -61,9 +61,9 @@ input {
 }
 
 #timer {
-  font-size: 19pt;
+  font-size: 40pt;
   display: inline-block;
-  width: 250px;
+  /* width: 250px; */
   margin: auto;
 }
 

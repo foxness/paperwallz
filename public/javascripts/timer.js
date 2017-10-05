@@ -20,13 +20,24 @@ function updateTimer(paused_, interval_, info_)
     {
         timerPaused = false
         destinationDate = moment(new Date(info_))
-        intervalId = setInterval(tick, 1)
+        tick()
+        intervalId = setInterval(tick, 1000)
     }
 }
 
 function updateTimerText()
 {
-    $(timerId).text(`${timeLeft.days()}d ${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s ${timeLeft.milliseconds()}ms`)
+    // let text = `${timeLeft.days()}d ${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s ${timeLeft.milliseconds()}ms`
+    
+    let text = ''
+    let hours = Math.floor(timeLeft.asMilliseconds() / (1000*60*60))
+    text += (hours < 10 ? `0${hours}:` : `${hours}:`)
+    let minutes = timeLeft.minutes()
+    text += (minutes < 10 ? `0${minutes}:` : `${minutes}:`)
+    let seconds = timeLeft.seconds()
+    text += (seconds < 10 ? `0${seconds}` : `${seconds}`)
+
+    $(timerId).text(text)
 }
 
 function tick()
