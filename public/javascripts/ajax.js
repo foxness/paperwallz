@@ -81,11 +81,34 @@ $(() =>
         $(`#${queueBox}`).remove()
         $('#main').append(element)
 
+        let beforeIndex = null
         $(`#${queueBox}`).sortable({
             containerSelector: 'table',
             itemPath: '> tbody',
             itemSelector: 'tr',
-            placeholder: '<tr class="placeholder"/>'
+            placeholder: '<tr class="placeholder"/>',
+            onDragStart: ($item, container, _super, event) =>
+            {
+                _super($item, container, _super, event)
+
+                beforeIndex = $item[0].sectionRowIndex
+            },
+            onDrop: ($item, container, _super, event) =>
+            {
+                _super($item, container, _super, event)
+
+                let afterIndex = $item[0].sectionRowIndex
+                // alert(`before: ${beforeIndex}\nafter: ${afterIndex}`)
+
+                if (beforeIndex != afterIndex)
+                {
+                    beforeIndex = queueInfo.queue.length - 1 - beforeIndex
+                    afterIndex = queueInfo.queue.length - 1 - afterIndex
+                    // ^ why? because the frontend queue is displayed reversed
+
+                    ws.send(JSON.stringify({ type: 'queueMove', value: { beforeIndex: beforeIndex, afterIndex: afterIndex } }))
+                }
+            }
           })
     }
 

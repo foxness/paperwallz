@@ -197,6 +197,27 @@ wss.on('connection', (connection, req) =>
                         throw err
                 })
         }
+        else if (json.type == 'queueMove')
+        {
+            async.waterfall(
+                [
+                    (callback) =>
+                    {
+                        User.findById(userId, callback)
+                    },
+
+                    (user, callback) =>
+                    {
+                        user.queue.splice(json.value.afterIndex, 0, user.queue.splice(json.value.beforeIndex, 1)[0])
+                        user.save(callback)
+                    }
+                ],
+                (err, results) =>
+                {
+                    if (err)
+                        throw err
+                })
+        }
     })
 })
 
