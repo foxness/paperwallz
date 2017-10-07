@@ -37,13 +37,16 @@ $(() =>
         if (queueInfo.queue.length + queueInfo.queueCompleted.length > 0)
         {
             let table = $('<table/>').attr('id', queueBox)
+            let thead = $('<thead/>')
             let headRow = $('<tr/>')
             headRow.append($('<th/>').text('#').attr('id', 'headNumber'))
             headRow.append($('<th/>').text('Title').attr('id', 'headTitle'))
             headRow.append($('<th/>').text('Link').attr('id', 'headLink'))
             headRow.append($('<th/>').text('Actions').attr('id', 'headActions'))
-            table.append(headRow)
+            thead.append(headRow)
+            table.append(thead)
 
+            let tbody = $('<tbody/>')
             let remainingItemCount = queueInfo.queue.length + queueInfo.queueCompleted.length
             for (let i = queueInfo.queue.length - 1; i >= 0; --i)
             {
@@ -53,7 +56,7 @@ $(() =>
                 row.append($('<td/>').text(r.title).addClass('titleElem'))
                 row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
                 row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `paperwallz.delete('${r.id}')` }).text('Delete')))
-                table.append(row)
+                tbody.append(row)
             }
 
             for (let i = queueInfo.queueCompleted.length - 1; i >= 0; --i)
@@ -64,9 +67,10 @@ $(() =>
                 row.append($('<td/>').text(r.title).addClass('titleElem'))
                 row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
                 row.append($('<td/>').append($('<a/>').attr({ 'href': r.completedUrl }).text('Open Post')))
-                table.append(row)
+                tbody.append(row)
             }
 
+            table.append(tbody)
             element = table
         }
         else
@@ -76,6 +80,13 @@ $(() =>
 
         $(`#${queueBox}`).remove()
         $('#main').append(element)
+
+        $(`#${queueBox}`).sortable({
+            containerSelector: 'table',
+            itemPath: '> tbody',
+            itemSelector: 'tr',
+            placeholder: '<tr class="placeholder"/>'
+          })
     }
 
     paperwallz.updateQueueInfo = () =>

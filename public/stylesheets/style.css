@@ -1,7 +1,7 @@
 * {
   padding: 0;
   margin: 0;
-  border: 1px solid rgb(129, 129, 129);
+  /* border: 1px solid rgb(129, 129, 129); */
   box-sizing: border-box;
 }
 
@@ -20,7 +20,6 @@ input {
 #main {
   padding-top: 60px;
   width: 680px;
-  /* height: 100%; */
   padding-bottom: 200px;
 }
 
@@ -38,7 +37,6 @@ input {
 }
 
 #username {
-  /* display: block; */
   font-size: 22pt;
 }
 
@@ -57,7 +55,6 @@ input[type=button] {
   background-color: #E2E2E2;
   font-size: 13.33px;
   display: block;
-  /* border-width: 1px; */
 }
 
 #timerBox {
@@ -76,7 +73,6 @@ input[type=button] {
 #timer {
   font-size: 40pt;
   display: inline-block;
-  /* width: 250px; */
   margin: auto;
 }
 
@@ -99,7 +95,6 @@ input[type=button] {
 }
 
 .titleElem {
-  padding-left: 10px;
   text-align: left;
 }
 
@@ -113,11 +108,10 @@ a {
 
 tr {
   text-align: center;
-  height: 30px;
 }
 
 td, th {
-  padding: 2px;
+  padding: 5px;
 }
 
 td {
@@ -132,7 +126,33 @@ table {
   background-color: #F1F1F1;
 }
 
-/* body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}*/
+#queueBox tr.placeholder {
+  display: block;
+  background: red;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+#queueBox tr.placeholder:before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-left-color: blue;
+  margin-top: -5px;
+  left: -5px;
+  border-right: none;
+}
+
+body.dragging, body.dragging * {
+  cursor: move !important; /* this is not working for some reason... */
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.8;
+  z-index: 2000;
+}
