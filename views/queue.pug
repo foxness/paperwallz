@@ -17,11 +17,11 @@ html
           a#logout(href='/logout') Log out
       div#timerBox
         div#timerBoxInner
-          input#toggle(type='button', onclick='toggle()', value='Toggle')
+          input#toggle(type='button', value='Toggle')
           p#timer
         div#sliderBox
-          input#slider(type='range', min='0', max='10000', value='0', onchange='sliderChange()', oninput='sliderInput()')
+          input#slider(type='range', min='0', max='10000', value='0')
       div#addBox
         input#add_title(type='text', placeholder='Enter the title')
         input#add_url(type='text', placeholder='Enter the url')
-        input#add_submit(type='button', onclick='add_submit()', value='Add')
+        input#add_submit(type='button', value='Add')

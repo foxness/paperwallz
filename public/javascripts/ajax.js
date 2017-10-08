@@ -3,30 +3,40 @@ paperwallz = {}
 let paused = true
 let ws = null
 
-let sliderChange = () =>
+$(() =>
 {
-    sendQueueTimeleft(Math.round(timeLeft.asMilliseconds()))
-}
+    $('#toggle').on('click', () =>
+    {
+        if (paused)
+            startTimer()
+        else
+            stopTimer()
+    
+        sendQueueToggle(paused)
+    
+        paused = !paused
+    })
+    
+    $('#slider').on('change', () =>
+    {
+        sendQueueTimeleft(Math.round(timeLeft.asMilliseconds()))
+    })
+    
+    $('#add_submit').on('click', () =>
+    {
+        let title = $('#add_title').val().trim()
+        let url = $('#add_url').val().trim()
+    
+        sendQueueAdd(title, url)
+    })
 
-let add_submit = () =>
-{
-    let title = $('#add_title').val().trim()
-    let url = $('#add_url').val().trim()
-
-    sendQueueAdd(title, url)
-}
-
-let toggle = () =>
-{
-    if (paused)
-        startTimer()
-    else
-        stopTimer()
-
-    sendQueueToggle(paused)
-
-    paused = !paused
-}
+    $('#slider').on('input', () =>
+    {
+        let ratio = 1 - $('#slider').val() / $('#slider').prop('max')
+        timeLeft = moment.duration(interval.asMilliseconds() * ratio)
+        updateTimerText()
+    })
+})
 
 let fillQueue = (queueInfo) =>
 {

@@ -8,13 +8,6 @@ let timerPaused = true
 let interval = null
 let updateDelay = 100
 
-function sliderInput()
-{
-    let ratio = 1 - $('#slider').val() / $('#slider').prop('max')
-    timeLeft = moment.duration(interval.asMilliseconds() * ratio)
-    updateTimerText()
-}
-
 function updateSliderState()
 {
     $('#slider').prop('disabled', !timerPaused)
