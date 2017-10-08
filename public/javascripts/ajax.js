@@ -54,7 +54,7 @@ let fillQueue = (queueInfo) =>
         for (let i = queueInfo.queue.length - 1; i >= 0; --i)
         {
             let r = queueInfo.queue[i]
-            let row = $('<tr/>')
+            let row = $('<tr/>').addClass('notCompleted')
             row.append($('<td/>').text(remainingItemCount--))
             row.append($('<td/>').text(r.title).addClass('titleElem'))
             row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
@@ -88,7 +88,7 @@ let fillQueue = (queueInfo) =>
     $(`#${queueBox}`).sortable({
         containerSelector: 'table',
         itemPath: '> tbody',
-        itemSelector: 'tr',
+        itemSelector: 'tr.notCompleted',
         placeholder: '<tr class="placeholder"/>',
         onDragStart: ($item, container, _super, event) =>
         {
@@ -101,14 +101,12 @@ let fillQueue = (queueInfo) =>
             _super($item, container, _super, event)
 
             let afterIndex = $item[0].sectionRowIndex
-            alert(`before: ${beforeIndex}\nafter: ${afterIndex}`)
 
             if (beforeIndex != afterIndex)
             {
                 beforeIndex = queueInfo.queue.length - 1 - beforeIndex
                 afterIndex = queueInfo.queue.length - 1 - afterIndex
                 // ^ why? because the frontend queue is displayed reversed
-
                 ws.send(JSON.stringify({ type: 'queueMove', value: { beforeIndex: beforeIndex, afterIndex: afterIndex } }))
             }
         }
