@@ -1,20 +1,17 @@
 const queueBox = 'queueBox'
 paperwallz = {}
-let paused = true
 let ws = null
 
 $(() =>
 {
     $('#toggle').on('click', () =>
     {
-        if (paused)
+        if (timerPaused)
             startTimer()
         else
             stopTimer()
     
-        sendQueueToggle(paused)
-    
-        paused = !paused
+        sendQueueToggle(!timerPaused)
     })
     
     $('#slider').on('change', () =>
