@@ -5,7 +5,7 @@ let ws = null
 
 let sliderChange = () =>
 {
-    ws.send(JSON.stringify({ type: 'queueTimeleft', value: { ms: Math.round(timeLeft.asMilliseconds()) } }))
+    sendQueueTimeleft(Math.round(timeLeft.asMilliseconds()))
 }
 
 let add_submit = () =>
@@ -13,12 +13,7 @@ let add_submit = () =>
     let title = $('#add_title').val().trim()
     let url = $('#add_url').val().trim()
 
-    ws.send(JSON.stringify({ type: 'queueAdd', value: { title: title, url: url } }))
-}
-
-let queueDelete = (id) =>
-{
-    ws.send(JSON.stringify({ type: 'queueDelete', value: { id: id } }))
+    sendQueueAdd(title, url)
 }
 
 let toggle = () =>
@@ -28,7 +23,7 @@ let toggle = () =>
     else
         stopTimer()
 
-    ws.send(JSON.stringify({ type: 'queueToggle', value: (paused ? 'start' : 'stop') }))
+    sendQueueToggle(paused)
 
     paused = !paused
 }
@@ -36,7 +31,6 @@ let toggle = () =>
 let fillQueue = (queueInfo) =>
 {
     let element = null
-
     if (queueInfo.queue.length + queueInfo.queueCompleted.length > 0)
     {
         let table = $('<table/>').attr('id', queueBox)
@@ -58,7 +52,7 @@ let fillQueue = (queueInfo) =>
             row.append($('<td/>').text(remainingItemCount--))
             row.append($('<td/>').text(r.title).addClass('titleElem'))
             row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
-            row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `queueDelete('${r.id}')` }).text('Delete')))
+            row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `sendQueueDelete('${r.id}')` }).text('Delete')))
             tbody.append(row)
         }
 
@@ -107,15 +101,11 @@ let fillQueue = (queueInfo) =>
                 beforeIndex = queueInfo.queue.length - 1 - beforeIndex
                 afterIndex = queueInfo.queue.length - 1 - afterIndex
                 // ^ why? because the frontend queue is displayed reversed
-                ws.send(JSON.stringify({ type: 'queueMove', value: { beforeIndex: beforeIndex, afterIndex: afterIndex } }))
+
+                sendQueueMove(beforeIndex, afterIndex)
             }
         }
-        })
-}
-
-let updateQueueInfo = () =>
-{
-    ws.send(JSON.stringify({ type: 'queueInfo', value: null }))
+    })
 }
 
 let getCookie = (cname) =>
@@ -136,6 +126,46 @@ let getCookie = (cname) =>
     return ''
 }
 
+let sendToServer = (type, value) =>
+{
+    ws.send(JSON.stringify({ type: type, value: value }))
+}
+
+let sendQueueTimeleft = (ms) =>
+{
+    sendToServer('queueTimeleft', { ms: ms })
+}
+
+let sendQueueAdd = (title, url) =>
+{
+    sendToServer('queueAdd', { title: title, url: url })
+}
+
+let sendQueueDelete = (id) =>
+{
+    sendToServer('queueDelete', { id: id })
+}
+
+let sendQueueToggle = (start) =>
+{
+    sendToServer('queueToggle', (start ? 'start' : 'stop'))
+}
+
+let sendQueueMove = (beforeIndex, afterIndex) =>
+{
+    sendToServer('queueMove', { beforeIndex: beforeIndex, afterIndex: afterIndex })
+}
+
+let requestQueueInfo = () =>
+{
+    sendToServer('queueInfo', null)
+}
+
+let sendAuthCookie = (authCookie) =>
+{
+    sendToServer('cookie', { cookie: authCookie })
+}
+
 ws = new WebSocket('ws://localhost')
 
 ws.onmessage = (event) =>
@@ -152,6 +182,6 @@ ws.onmessage = (event) =>
 
 ws.onopen = (event) =>
 {
-    ws.send(JSON.stringify({ type: 'cookie', value: { cookie: getCookie('superSecretCookie1337') } }))
-    updateQueueInfo()
+    sendAuthCookie(getCookie('superSecretCookie1337'))
+    requestQueueInfo()
 }
