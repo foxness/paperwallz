@@ -20,7 +20,7 @@ html
           input#toggle(type='button', onclick='paperwallz.toggle()', value='Toggle')
           p#timer
         div#sliderBox
-          input#slider(type='range', min='0', max='10000', value='0')
+          input#slider(type='range', min='0', max='10000', value='0', onchange='sliderChange()', oninput='sliderInput()')
       div#addBox
         input#add_title(type='text', placeholder='Enter the title')
         input#add_url(type='text', placeholder='Enter the url')
