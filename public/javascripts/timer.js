@@ -6,6 +6,7 @@ let timeLeft = null
 let destinationDate = null
 let timerPaused = true
 let interval = null
+let updateDelay = 100
 
 function updateTimer(paused_, interval_, info_)
 {
@@ -14,18 +15,18 @@ function updateTimer(paused_, interval_, info_)
     if (paused_)
     {
         timeLeft = moment.duration(info_)
-        updateTimerText()
+        updateInterface()
     }
     else
     {
         timerPaused = false
         destinationDate = moment(new Date(info_))
         tick()
-        intervalId = setInterval(tick, 1000)
+        intervalId = setInterval(tick, updateDelay)
     }
 }
 
-function updateTimerText()
+function updateInterface()
 {
     // let text = `${timeLeft.days()}d ${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s ${timeLeft.milliseconds()}ms`
     
@@ -36,6 +37,9 @@ function updateTimerText()
     text += (minutes < 10 ? `0${minutes}:` : `${minutes}:`)
     let seconds = timeLeft.seconds()
     text += (seconds < 10 ? `0${seconds}` : `${seconds}`)
+
+    let ratio = 1 - timeLeft.asMilliseconds() / interval.asMilliseconds()
+    $('#slider').val(ratio * $('#slider').prop('max'))
 
     $(timerId).text(text)
 }
@@ -50,7 +54,7 @@ function tick()
         timeLeft = interval
     }
 
-    updateTimerText()
+    updateInterface()
 }
 
 function startTimer()
@@ -60,7 +64,7 @@ function startTimer()
     
     timerPaused = false
     destinationDate = moment().add(timeLeft)
-    intervalId = setInterval(tick, 1)
+    intervalId = setInterval(tick, updateDelay)
 }
 
 function stopTimer()

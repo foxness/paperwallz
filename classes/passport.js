@@ -31,7 +31,7 @@ let userRuntimeFirstSetup = (user) =>
         let csc = crypto.randomBytes(32).toString('hex')
         Globals.users[user.id] = { timer: null, wsConnection: null, customSessionCookieSet: false, customSessionCookie: csc }
 
-        let timer = new Timer(moment.duration(10, 'm'))
+        let timer = new Timer(moment.duration(3, 'm'))
         timer.on('tick', () =>
         {
             async.waterfall(
