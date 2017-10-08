@@ -7,25 +7,23 @@ let destinationDate = null
 let timerPaused = true
 let interval = null
 let updateDelay = 100
-let inputtingWhileNotPaused = false
 
 function sliderInput()
 {
     let ratio = 1 - $('#slider').val() / $('#slider').prop('max')
     timeLeft = moment.duration(interval.asMilliseconds() * ratio)
-    
-    if (!timerPaused)
-    {
-        inputtingWhileNotPaused = true
-        destinationDate = moment().add(timeLeft)
-    }
-
     updateTimerText()
 }
 
 function sliderChange()
 {
-    inputtingWhileNotPaused = false
+    
+}
+
+function updateSliderState()
+{
+    $('#slider').prop('disabled', !timerPaused)
+    $('#slider').css('background-color', (timerPaused ? '#d3d3d3' : '#DBC1FF'))
 }
 
 function updateTimerText()
@@ -59,6 +57,7 @@ function updateTimer(paused_, interval_, info_)
     else
     {
         timerPaused = false
+        updateSliderState()
         destinationDate = moment(new Date(info_))
         tick()
         intervalId = setInterval(tick, updateDelay)
@@ -73,9 +72,6 @@ function updateInterface()
 
 function tick()
 {
-    if (inputtingWhileNotPaused)
-        return
-
     timeLeft = moment.duration(destinationDate.diff(moment()))
 
     if (timeLeft.asMilliseconds() <= 0)
@@ -93,6 +89,7 @@ function startTimer()
         return
     
     timerPaused = false
+    updateSliderState()
     destinationDate = moment().add(timeLeft)
     intervalId = setInterval(tick, updateDelay)
 }
@@ -103,5 +100,6 @@ function stopTimer()
         return
     
     timerPaused = true
+    updateSliderState()
     clearInterval(intervalId)
 }
