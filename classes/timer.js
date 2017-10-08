@@ -43,6 +43,15 @@ class Timer extends EventEmitter
         this.timeLeft = moment.duration(this.tickDate.diff(moment()))
         this.emit('stop')
     }
+
+    change(timeLeft)
+    {
+        if (!this.paused)
+            return
+        
+        this.timeLeft = moment.duration(timeLeft)
+        this.emit('change')
+    }
 }
 
 module.exports = Timer

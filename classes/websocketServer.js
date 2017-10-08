@@ -116,11 +116,11 @@ wss.on('connection', (connection, req) =>
 
         if (!firstMessageReceived)
         {
-            if (json.type == 'cookie' && json.value)
+            if (json.type == 'cookie')
             {
                 for (userId_ in Globals.users)
                 {
-                    if (json.value === Globals.users[userId_].customSessionCookie)
+                    if (Globals.users[userId_].customSessionCookie == json.value.cookie)
                     {
                         userId = userId_
                         Globals.users[userId].wsConnection = connection
@@ -217,6 +217,10 @@ wss.on('connection', (connection, req) =>
                     if (err)
                         throw err
                 })
+        }
+        else if (json.type == 'queueTimeleft')
+        {
+            Globals.users[userId].timer.change(parseInt(json.value.ms))
         }
     })
 })

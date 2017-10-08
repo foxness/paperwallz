@@ -5,6 +5,11 @@ $(() =>
     let paused = true
     let ws = null
 
+    paperwallz.sliderChange = () =>
+    {
+        ws.send(JSON.stringify({ type: 'queueTimeleft', value: { ms: Math.round(timeLeft.asMilliseconds()) } }))
+    }
+
     paperwallz.add_submit = () =>
     {
         let title = $('#add_title').val().trim()
@@ -151,7 +156,7 @@ $(() =>
 
     ws.onopen = (event) =>
     {
-        ws.send(JSON.stringify({ type: 'cookie', value: paperwallz.getCookie('superSecretCookie1337') }))
+        ws.send(JSON.stringify({ type: 'cookie', value: { cookie: paperwallz.getCookie('superSecretCookie1337') } }))
         paperwallz.updateQueueInfo()
     }
 })

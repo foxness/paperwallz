@@ -15,11 +15,6 @@ function sliderInput()
     updateTimerText()
 }
 
-function sliderChange()
-{
-    
-}
-
 function updateSliderState()
 {
     $('#slider').prop('disabled', !timerPaused)
