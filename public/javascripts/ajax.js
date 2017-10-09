@@ -33,6 +33,29 @@ $(() =>
         timeLeft = moment.duration(interval.asMilliseconds() * ratio)
         updateTimerText()
     })
+
+    $(window).on('click', (event) =>
+    {
+        if (event.target == $('#fade')[0])
+        {
+            $('#fade').hide()
+        }
+    })
+
+    $('#settings').on('click', () =>
+    {
+        $('#fade').show()
+    })
+
+    $('#settingsCancel').on('click', () =>
+    {
+        $('#fade').hide()
+    })
+
+    $('#settingsOk').on('click', () =>
+    {
+        $('#fade').hide()
+    })
 })
 
 let fillQueue = (queueInfo) =>
