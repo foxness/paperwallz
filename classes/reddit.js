@@ -79,13 +79,16 @@ class Reddit
                 {
                     if (err)
                         return callback(err)
-
-                    let parsed = JSON.parse(body).json
-
-                    if (parsed.errors.length > 0)
-                        return callback(parsed.errors)
                     
-                    callback(err, parsed.data.url)
+                    if (response.statusCode != 200)
+                        return callback(response)
+
+                    let json = JSON.parse(body).json
+
+                    if (json.errors.length > 0)
+                        return callback(json.errors)
+                    
+                    callback(err, json.data.url)
                 })
             }
         ]
