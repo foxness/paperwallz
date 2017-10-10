@@ -54,9 +54,18 @@ $(() =>
 
     $('#settingsOk').on('click', () =>
     {
-        $('#fade').hide()
+        if (!timerPaused)
+        {
+            $('#myPopup').css('visibility', 'visible')
+            setTimeout(() =>
+            {
+                $('#myPopup').css('visibility', 'hidden')
+            }, 3000)
 
-        // assumes the queue is paused
+            return
+        }
+
+        $('#fade').hide()
 
         let hours = parseInt($('#hourSetting').val())
         let minutes = parseInt($('#minuteSetting').val())
