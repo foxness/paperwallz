@@ -10,20 +10,20 @@ $(() =>
             startTimer()
         else
             stopTimer()
-    
+
         sendQueueToggle(!timerPaused)
     })
-    
+
     $('#slider').on('change', () =>
     {
         sendQueueTimeleft(Math.round(timeLeft.asMilliseconds()))
     })
-    
+
     $('#add_submit').on('click', () =>
     {
         let title = $('#add_title').val().trim()
         let url = $('#add_url').val().trim()
-    
+
         sendQueueAdd(title, url)
     })
 
@@ -55,8 +55,29 @@ $(() =>
     $('#settingsOk').on('click', () =>
     {
         $('#fade').hide()
+
+        // assumes the queue is paused
+
+        let hours = parseInt($('#hourSetting').val())
+        let minutes = parseInt($('#minuteSetting').val())
+        let ms = (minutes * 1000*60) + (hours * 1000*60*60)
+        sendQueueInterval(ms)
+        changeInterval(ms)
+    })
+
+    $('#minuteSetting').on('change', (input) =>
+    {
+        if (!isNaN(input.target.value) && input.target.value.length === 1)
+        {
+            input.target.value = leadZero(input.target.value)
+        }
     })
 })
+
+let leadZero = (s) =>
+{
+    return s.toString().length == 1 ? '0' + s : s
+}
 
 let fillQueue = (queueInfo) =>
 {
@@ -87,7 +108,7 @@ let fillQueue = (queueInfo) =>
         }
 
         for (let i = queueInfo.queueCompleted.length - 1; i >= 0; --i)
-        {   
+        {
             let r = queueInfo.queueCompleted[i]
             let row = $('<tr/>').addClass('completed')
             row.append($('<td/>').text(remainingItemCount--))
@@ -109,7 +130,8 @@ let fillQueue = (queueInfo) =>
     $('#main').append(element)
 
     let beforeIndex = null
-    $(`#${queueBox}`).sortable({
+    $(`#${queueBox}`).sortable(
+    {
         containerSelector: 'table',
         itemPath: '> tbody',
         itemSelector: 'tr.notCompleted',
@@ -136,6 +158,10 @@ let fillQueue = (queueInfo) =>
             }
         }
     })
+
+    let interval = moment.duration(queueInfo.queueInterval)
+    $('#hourSetting').val(interval.hours())
+    $('#minuteSetting').val(leadZero(interval.minutes()))
 }
 
 let getCookie = (cname) =>
@@ -184,6 +210,11 @@ let sendQueueToggle = (start) =>
 let sendQueueMove = (beforeIndex, afterIndex) =>
 {
     sendToServer('queueMove', { beforeIndex: beforeIndex, afterIndex: afterIndex })
+}
+
+let sendQueueInterval = (ms) =>
+{
+    sendToServer('queueInterval', { ms: ms })
 }
 
 let requestQueueInfo = () =>

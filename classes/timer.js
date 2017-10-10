@@ -6,7 +6,7 @@ class Timer extends EventEmitter
     constructor(interval) // moment.duration
     {
         super()
-        this.paused = true // aka stopped
+        this.paused = true
         this.timeLeft = interval
         this.tickDate = null
         this.interval = interval
@@ -44,13 +44,23 @@ class Timer extends EventEmitter
         this.emit('stop')
     }
 
-    change(timeLeft)
+    changeTimeleft(timeLeft)
     {
         if (!this.paused)
             return
         
         this.timeLeft = moment.duration(timeLeft)
-        this.emit('change')
+        this.emit('changeTimeleft')
+    }
+
+    changeInterval(interval)
+    {
+        if (!this.paused)
+            return
+        
+        this.interval = moment.duration(interval)
+        this.timeLeft = this.interval
+        this.emit('changeInterval')
     }
 }
 

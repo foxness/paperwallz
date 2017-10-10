@@ -1,7 +1,7 @@
 * {
   padding: 0;
   margin: 0;
-  border: 1px solid rgb(129, 129, 129);
+  /* border: 1px solid rgb(129, 129, 129); */
   box-sizing: border-box;
 }
 
@@ -250,4 +250,13 @@ body.dragging, body.dragging * {
 
 .label {
   text-align: center;
+}
+
+input[type='number'] {
+  -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
 }

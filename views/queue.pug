@@ -30,8 +30,8 @@ html
       div#settingsContent
         p.label Submission interval
         div#timeBox
-          input.numberSetting(type='number', name='hour', min='0', max='23', value='03')
-          input.numberSetting(type='number', name='minute', min='0', max='59', value='00')
+          input#hourSetting.numberSetting(type='number', name='hour', min='0', max='23', value='3')
+          input#minuteSetting.numberSetting(type='number', name='minute', min='0', max='59', value='00')
         div#settingsButtons
           input#settingsCancel(type='button', value='Cancel')
           input#settingsOk(type='button', value='OK')

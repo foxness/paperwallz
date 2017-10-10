@@ -8,6 +8,13 @@ let timerPaused = true
 let interval = null
 let updateDelay = 100
 
+function changeInterval(ms)
+{
+    interval = moment.duration(ms)
+    timeLeft = interval
+    updateInterface()
+}
+
 function updateSliderState()
 {
     $('#slider').prop('disabled', !timerPaused)

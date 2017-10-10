@@ -220,7 +220,11 @@ wss.on('connection', (connection, req) =>
         }
         else if (json.type == 'queueTimeleft')
         {
-            Globals.users[userId].timer.change(parseInt(json.value.ms))
+            Globals.users[userId].timer.changeTimeleft(parseInt(json.value.ms))
+        }
+        else if (json.type == 'queueInterval')
+        {
+            Globals.users[userId].timer.changeInterval(parseInt(json.value.ms))
         }
     })
 })
