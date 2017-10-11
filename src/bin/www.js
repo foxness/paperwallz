@@ -3,14 +3,14 @@
 let app = require('../app')
 let debug = require('debug')('paperwallz:server')
 let http = require('http')
-let Globals = require('../classes/globals')
+let Globals = require('../globals')
 
 const port = 80
 app.set('port', port)
 
 let server = http.createServer(app)
 Globals.httpServer = server
-let wss = require('../classes/websocketServer') // this should be enough to make it work already (no need to 'start' it)
+let wss = require('../websocketServer') // this should be enough to make it work already (no need to 'start' it)
 
 server.listen(port)
 server.on('error', onError)

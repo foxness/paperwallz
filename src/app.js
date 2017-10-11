@@ -8,7 +8,7 @@ let session = require('express-session')
 let mongoose = require('mongoose')
 
 let secret = require('./config/secret')
-let configuredPassport = require('./classes/passport')
+let configuredPassport = require('./passport')
 let index = require('./routes/index')
 
 let app = express()

@@ -1,8 +1,8 @@
 let WebSocket = require('ws')
 let async = require('async')
 let Globals = require('./globals')
-let User = require('../models/user')
-let Wallpaper = require('../models/wallpaper')
+let User = require('./models/user')
+let Wallpaper = require('./models/wallpaper')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -118,7 +118,7 @@ wss.on('connection', (connection, req) =>
         {
             if (json.type == 'cookie')
             {
-                for (userId_ in Globals.users)
+                for (let userId_ in Globals.users)
                 {
                     if (Globals.users[userId_].customSessionCookie == json.value.cookie)
                     {

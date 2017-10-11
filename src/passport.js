@@ -5,10 +5,10 @@ let crypto = require('crypto')
 let RedditStrategy = require('passport-reddit').Strategy
 
 let Timer = require('./timer')
-let Wallpaper = require('../models/wallpaper')
+let Wallpaper = require('./models/wallpaper')
 let Reddit = require('./reddit')
-let User = require('../models/user')
-let secret = require('../config/secret')
+let User = require('./models/user')
+let secret = require('./config/secret')
 let Globals = require('./globals')
 
 passport.serializeUser((user, done) =>
