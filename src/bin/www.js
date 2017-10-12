@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+process.on('unhandledRejection', up => { throw up })
+
 let app = require('../app')
 let debug = require('debug')('paperwallz:server')
 let http = require('http')

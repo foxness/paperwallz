@@ -1,108 +1,64 @@
 let WebSocket = require('ws')
-let async = require('async')
 let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
-let getQueueInfo = (userId, callback) =>
+let getQueueInfo = async (userId) =>
 {
-    User.findById(userId).populate('queue').populate('completed').exec((err, result) =>
-    {
-        if (err)
-            return callback(err)
+    let result = await User.findById(userId).populate('queue').populate('completed').exec()
 
-        let timer = Globals.users[result.id].timer
-        
-        let info = { queue: [], queueCompleted: [], queuePaused: timer.paused }
-        for (let wallpaper of result.queue) // todo: use map()
-            info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
-        
-        for (let wallpaper of result.completed) // todo: use map()
-            info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, completedUrl: wallpaper.completedUrl })
+    let timer = Globals.users[result.id].timer
+    
+    let info = { queue: [], queueCompleted: [], queuePaused: timer.paused }
+    for (let wallpaper of result.queue) // todo: use map()
+        info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
+    
+    for (let wallpaper of result.completed) // todo: use map()
+        info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, completedUrl: wallpaper.completedUrl })
 
-        info.queueInterval = timer.interval.asMilliseconds()
-        
-        if (info.queuePaused)
-            info.queueTimeLeft = timer.timeLeft.asMilliseconds()
-        else
-            info.queueSubmissionDate = timer.tickDate.toDate()
+    info.queueInterval = timer.interval.asMilliseconds()
+    
+    if (info.queuePaused)
+        info.queueTimeLeft = timer.timeLeft.asMilliseconds()
+    else
+        info.queueSubmissionDate = timer.tickDate.toDate()
 
-        callback(null, info)
-    })
+    return info
 }
 
-let addWallpaper = (userId, title, url, callback) =>
+let addWallpaper = async (userId, title, url) =>
 {
     let wallpaper = new Wallpaper({ title: title, url: url })
 
-    async.waterfall(
-        [
-            (callback_) =>
-            {
-                wallpaper.save((err, result) =>
-                {
-                    callback_(err, result) // i don't even know why i have to do this explicitly,
-                })                         // simply passing the callback_ to save() won't work for some reason
-            },
+    wallpaper = await wallpaper.save()
+    
+    let user = await User.findById(userId)
 
-            (wallpaper_, callback_) =>
-            {
-                User.findById(userId, (err, user) =>
-                {
-                    callback_(err, user, wallpaper_)
-                })
-            },
-
-            (user, wallpaper_, callback_) =>
-            {
-                user.queue.push(wallpaper_)
-                user.save(callback_)
-            }
-        ],
-        (err, results) =>
-        {
-            callback(err)
-        })
+    user.queue.push(wallpaper)
+    await user.save()
 }
 
-let deleteWallpaper = (id, callback) =>
+let deleteWallpaper = async (id) =>
 {
-    async.parallel(
+    await Promise.all(
         [
-            (callback_) =>
-            {
-                Wallpaper.findByIdAndRemove(id, callback_)
-            },
+            Wallpaper.findByIdAndRemove(id),
 
-            (callback_) =>
-            {
-                User.update(
-                    { 'queue': id },
-                    { '$pull': { 'queue': id }},
-                    callback_
-                )
-            }
-        ],
-        (err, results) =>
-        {
-            callback(err)
-        })
+            User.update(
+                { 'queue': id },
+                { '$pull': { 'queue': id }},
+            )
+        ])
 }
 
-Globals.sendQueueInfoToUser = (userId, callback) =>
+Globals.sendQueueInfoToUser = async (userId) =>
 {
-    getQueueInfo(userId, (err, result) =>
-    {
-        if (err)
-            return callback(err)
-
-        let sent = JSON.stringify({ type: 'queueInfo', value: result })
-        Globals.users[userId].wsConnection.send(sent)
-        console.log(`sent: ${sent}`)
-        callback()
-    })
+    let info = await getQueueInfo(userId)
+    let sent = JSON.stringify({ type: 'queueInfo', value: info })
+    Globals.users[userId].wsConnection.send(sent)
+    // console.log(`sent: ${sent}`)
 }
 
 wss.on('connection', (connection, req) =>
@@ -110,7 +66,7 @@ wss.on('connection', (connection, req) =>
     let firstMessageReceived = false
     let userId = null
 
-    connection.on('message', (message) =>
+    connection.on('message', async (message) =>
     {
         let json = JSON.parse(message)
 
@@ -142,11 +98,7 @@ wss.on('connection', (connection, req) =>
 
         if (json.type == 'queueInfo')
         {
-            Globals.sendQueueInfoToUser(userId, (err) =>
-            {
-                if (err)
-                    throw err
-            })
+            await Globals.sendQueueInfoToUser(userId)
         }
         else if (json.type == 'queueToggle')
         {
@@ -159,64 +111,19 @@ wss.on('connection', (connection, req) =>
         }
         else if (json.type == 'queueAdd')
         {
-            async.waterfall(
-                [
-                    (callback) =>
-                    {
-                        addWallpaper(userId, json.value.title, json.value.url, callback)
-                    },
-
-                    (callback) =>
-                    {
-                        Globals.sendQueueInfoToUser(userId, callback)
-                    }
-                ],
-                (err, results) =>
-                {
-                    if (err)
-                        throw err
-                })
+            await addWallpaper(userId, json.value.title, json.value.url)
+            await Globals.sendQueueInfoToUser(userId)
         }
         else if (json.type == 'queueDelete')
         {
-            async.waterfall(
-                [
-                    (callback) =>
-                    {
-                        deleteWallpaper(json.value.id, callback)
-                    },
-
-                    (callback) =>
-                    {
-                        Globals.sendQueueInfoToUser(userId, callback)
-                    }
-                ],
-                (err, results) =>
-                {
-                    if (err)
-                        throw err
-                })
+            await deleteWallpaper(json.value.id)
+            await Globals.sendQueueInfoToUser(userId)
         }
         else if (json.type == 'queueMove')
         {
-            async.waterfall(
-                [
-                    (callback) =>
-                    {
-                        User.findById(userId, callback)
-                    },
-
-                    (user, callback) =>
-                    {
-                        user.queue.splice(json.value.afterIndex, 0, user.queue.splice(json.value.beforeIndex, 1)[0])
-                        user.save(callback)
-                    }
-                ],
-                (err, results) =>
-                {
-                    if (err)
-                        throw err
-                })
+            let user = await User.findById(userId)
+            user.queue.splice(json.value.afterIndex, 0, user.queue.splice(json.value.beforeIndex, 1)[0])
+            await user.save()
         }
         else if (json.type == 'queueTimeleft')
         {
