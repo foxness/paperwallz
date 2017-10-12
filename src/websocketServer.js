@@ -1,5 +1,4 @@
 let WebSocket = require('ws')
-let async = require('async')
 let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')

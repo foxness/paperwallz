@@ -3,6 +3,7 @@ let moment = require('moment')
 let async = require('async')
 let crypto = require('crypto')
 let RedditStrategy = require('passport-reddit').Strategy
+let Promise = require('promise')
 
 let Timer = require('./timer')
 let Wallpaper = require('./models/wallpaper')
@@ -16,12 +17,16 @@ passport.serializeUser((user, done) =>
     done(null, user.id)
 })
 
-passport.deserializeUser((obj, done) =>
+passport.deserializeUser(async (obj, done) =>
 {
-    User.findById(obj, (err, result) =>
+    try
     {
-        done(err, result)
-    })
+        done(null, await User.findById(obj))
+    }
+    catch (err)
+    {
+        done(err)
+    }
 })
 
 let userRuntimeFirstSetup = (user) =>
@@ -32,67 +37,22 @@ let userRuntimeFirstSetup = (user) =>
         Globals.users[user.id] = { timer: null, wsConnection: null, customSessionCookieSet: false, customSessionCookie: csc }
 
         let timer = new Timer(moment.duration(1, 'h'))
-        timer.on('tick', () =>
+        timer.on('tick', async () =>
         {
-            async.waterfall(
-                [
-                    (callback) =>
-                    {
-                        // the queue in user.queue is not updated by the time the timer ticks
-                        // so we update our user to get current queue items
+            let foundUser = await User.findById(user.id)
+            let foundWallpaper = Wallpaper.findById(foundUser.queue[0].toString())
+            let reddit = new Reddit(foundUser)
+            let completedUrl = await Promise.denodeify(reddit.post)(foundWallpaper.url, foundWallpaper.title)
 
-                        User.findById(user.id, callback)
-                    },
+            foundWallpaper.completedUrl = completedUrl
+            foundWallpaper.completionDate = new Date()
+            foundWallpaper = await foundWallpaper.save()
+            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
 
-                    (foundUser, callback) =>
-                    {
-                        Wallpaper.findById(foundUser.queue[0].toString(), (err, foundWallpaper) =>
-                        {
-                            callback(err, foundUser, foundWallpaper)
-                        })
-                    },
-
-                    (foundUser, foundWallpaper, callback) =>
-                    {
-                        let reddit = new Reddit(foundUser)
-                        reddit.post(foundWallpaper.url, foundWallpaper.title, (err, completedUrl) =>
-                        {
-                            callback(err, foundUser, foundWallpaper, completedUrl)
-                        })
-                    },
-
-                    (foundUser, foundWallpaper, completedUrl, callback) =>
-                    {
-                        foundWallpaper.completedUrl = completedUrl
-                        foundWallpaper.completionDate = new Date()
-                        foundWallpaper.save((err, foundWallpaper_) =>
-                        {
-                            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
-                            callback(err, foundUser, foundWallpaper_)
-                        })
-                    },
-
-                    (foundUser, foundWallpaper, callback) =>
-                    {
-                        foundUser.completed.push(foundWallpaper)
-                        foundUser.queue.shift()
-                        foundUser.save((err, result) =>
-                        {
-                            callback(err) // this is needed, trust me
-                        })
-                    },
-
-                    async (callback) =>
-                    {
-                        await Globals.sendQueueInfoToUser(user.id)
-                        callback()
-                    }
-                ],
-                (err, results) =>
-                {
-                    if (err)
-                        throw err
-                })
+            foundUser.completed.push(foundWallpaper)
+            foundUser.queue.shift()
+            foundUser = await foundUser.save()
+            await Globals.sendQueueInfoToUser(user.id)
         })
 
         timer.on('start', () =>
@@ -116,46 +76,37 @@ passport.use(new RedditStrategy(
         callbackURL: 'http://localhost/callback',
         scope: 'submit'
     },
-    (accessToken, refreshToken, profile, done) =>
+    async (accessToken, refreshToken, profile, done) =>
     {
-        User.findOne({ name: profile.name }, (err, result) =>
+        try
         {
-            if (err)
-                return done(err)
-
+            let user = await User.findOne({ name: profile.name })
             let tokenExpire = moment().add(1, 'h').toDate()
-
-            if (result)
+    
+            if (user)
             {
-                User.findByIdAndUpdate(result.id, { accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire }, (err, result) =>
-                {
-                    if (err)
-                        return done(err)
-                    
-                    userRuntimeFirstSetup(result)
-                    return done(null, result)
-                })
+                user = await User.findByIdAndUpdate(user.id, { accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire })
             }
             else
             {
-                let user = new User(
+                user = new User(
                 {
                     name: profile.name,
                     accessToken: accessToken,
                     refreshToken: refreshToken,
                     accessTokenExpireDate: tokenExpire,
                 })
-
-                user.save((err, result) =>
-                {
-                    if (err)
-                        return done(err)
-                    
-                    userRuntimeFirstSetup(result)
-                    return done(null, result)
-                })
+    
+                user = await user.save()
             }
-        })
+    
+            userRuntimeFirstSetup(user)
+            return done(null, user)
+        }
+        catch (err)
+        {
+            return done(err)
+        }
     }
 ))
 
