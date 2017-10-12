@@ -73,7 +73,7 @@ passport.use(new RedditStrategy(
     {
         clientID: secret.reddit_clientid,
         clientSecret: secret.reddit_secret,
-        callbackURL: 'http://localhost/callback',
+        callbackURL: secret.reddit_callback,
         scope: 'submit'
     },
     async (accessToken, refreshToken, profile, done) =>
