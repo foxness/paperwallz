@@ -40,9 +40,9 @@ let userRuntimeFirstSetup = (user) =>
         timer.on('tick', async () =>
         {
             let foundUser = await User.findById(user.id)
-            let foundWallpaper = Wallpaper.findById(foundUser.queue[0].toString())
+            let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
             let reddit = new Reddit(foundUser)
-            let completedUrl = await Promise.denodeify(reddit.post)(foundWallpaper.url, foundWallpaper.title)
+            let completedUrl = await reddit.post(foundWallpaper.url, foundWallpaper.title)
 
             foundWallpaper.completedUrl = completedUrl
             foundWallpaper.completionDate = new Date()

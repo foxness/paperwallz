@@ -52,56 +52,62 @@ class Reddit
         })
     }
 
-    post(image_url, title, callback)
+    post(image_url, title)
     {
-        let requestOptions =
+        return new Promise(((resolve, reject) =>
         {
-            headers: { 'User-Agent': this.USER_AGENT },
-            auth: { bearer: this.user.accessToken },
-            form:
+            let requestOptions =
             {
-                'api_type': 'json',
-                'kind': 'self',
-                'resubmit': 'true',
-                'sendreplies': 'true',
-                'sr': 'test',
-                'text': image_url,
-                // 'url': image_url,
-                'title': title
-            }
-        }
-
-        let funcs =
-        [
-            (callback) =>
-            {
-                request.post(this.SUBMIT_URL, requestOptions, (err, response, body) =>
+                headers: { 'User-Agent': this.USER_AGENT },
+                auth: { bearer: this.user.accessToken },
+                form:
                 {
-                    if (err)
-                        return callback(err)
-                    
-                    if (response.statusCode != 200)
-                        return callback(response)
-
-                    let json = JSON.parse(body).json
-
-                    if (json.errors.length > 0)
-                        return callback(json.errors)
-                    
-                    callback(err, json.data.url)
-                })
+                    'api_type': 'json',
+                    'kind': 'self',
+                    'resubmit': 'true',
+                    'sendreplies': 'true',
+                    'sr': 'test',
+                    'text': image_url,
+                    // 'url': image_url,
+                    'title': title
+                }
             }
-        ]
-
-        if (!this.user.accessToken || moment().isAfter(moment(this.user.accessTokenExpireDate)))
-        {
-            funcs.unshift((callback) => { this.refreshAccessToken(callback) })
-        }
-
-        async.series(funcs, (err, results) =>
-        {
-            callback(err, results.pop())
-        })
+    
+            let funcs =
+            [
+                (callback) =>
+                {
+                    request.post(this.SUBMIT_URL, requestOptions, (err, response, body) =>
+                    {
+                        if (err)
+                            return reject(err)
+                        
+                        if (response.statusCode != 200)
+                            return reject(response)
+    
+                        let json = JSON.parse(body).json
+    
+                        if (json.errors.length > 0)
+                            return reject(json.errors)
+                        
+                        resolve(json.data.url)
+                    })
+                }
+            ]
+    
+            if (!this.user.accessToken || moment().isAfter(moment(this.user.accessTokenExpireDate)))
+            {
+                funcs.unshift((callback) => { this.refreshAccessToken(callback) })
+            }
+    
+            async.series(funcs, (err, results) =>
+            {
+                if (err)
+                    return reject(err)
+                
+                resolve(results.pop())
+            })
+        }).bind(this))
     }
 }
 
