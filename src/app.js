@@ -14,6 +14,7 @@ let index = require('./routes/index')
 let app = express()
 
 let mongoDB = secret.mongodb
+mongoose.Promise = global.Promise
 mongoose.connect(mongoDB)
 let db = mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
@@ -35,14 +36,14 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', index)
 
-app.use(function(req, res, next)
+app.use((req, res, next) =>
 {
     let err = new Error('Not Found')
     err.status = 404
     next(err)
 })
 
-app.use(function(err, req, res, next)
+app.use((err, req, res, next) =>
 {
     res.locals.message = err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}

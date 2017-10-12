@@ -82,9 +82,10 @@ let userRuntimeFirstSetup = (user) =>
                         })
                     },
 
-                    (callback) =>
+                    async (callback) =>
                     {
-                        Globals.sendQueueInfoToUser(user.id, callback)
+                        await Globals.sendQueueInfoToUser(user.id)
+                        callback()
                     }
                 ],
                 (err, results) =>
