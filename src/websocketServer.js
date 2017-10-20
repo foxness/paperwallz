@@ -95,6 +95,8 @@ wss.on('connection', (connection, req) =>
 
         switch (json.type)
         {
+            case 'cookie': break // should already handled at this point
+
             case 'queueInfo':
                 {
                     await Globals.sendQueueInfoToUser(userId)
