@@ -1,4 +1,5 @@
 let WebSocket = require('ws')
+let moment = require('moment')
 let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
@@ -166,6 +167,16 @@ wss.on('connection', (connection, req) =>
             
             case 'imgurCallbackData':
                 {
+                    let user = await User.findByIdAndUpdate(userId,
+                        {
+                            connectedToImgur: true,
+                            imgurAccountId: json.value.account_id,
+                            imgurName: json.value.account_username,
+                            imgurRefreshToken: json.value.refresh_token,
+                            imgurAccessToken: json.value.access_token,
+                            imgurAccessTokenExpirationDate: moment().add(parseInt(json.value.expires_in), 's').toDate(),
+                        })
+
                     Globals.users[userId].wsConnection.send(JSON.stringify({ status: 'OK' }))
 
                     break
