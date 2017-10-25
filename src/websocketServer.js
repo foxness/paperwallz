@@ -2,6 +2,7 @@ let WebSocket = require('ws')
 let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
+let secret = require('./config/secret')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -151,6 +152,14 @@ wss.on('connection', (connection, req) =>
             case 'queueInterval':
                 {
                     Globals.users[userId].timer.changeInterval(parseInt(json.value.ms))
+
+                    break
+                }
+            
+            case 'imgurClientId':
+                {
+                    let sent = JSON.stringify({ type: 'imgurClientId', value: secret.imgur_clientid })
+                    Globals.users[userId].wsConnection.send(sent)
 
                     break
                 }

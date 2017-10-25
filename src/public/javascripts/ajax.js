@@ -1,6 +1,7 @@
 const queueBox = 'queueBox'
 paperwallz = {}
 let ws = null
+let imgurClientId = null
 
 $(() =>
 {
@@ -84,7 +85,9 @@ $(() =>
 
     $('#test').on('click', () =>
     {
-        sendToServer('imgurTest', null)
+        window.location.assign(`https://api.imgur.com/oauth2/authorize?client_id=${imgurClientId}&response_type=token`)
+        // let w = window.open(, '_blank')
+        // sendToServer('imgurTest', null)
     })
 })
 
@@ -236,6 +239,11 @@ let requestQueueInfo = () =>
     sendToServer('queueInfo', null)
 }
 
+let requestImgurClientId = () =>
+{
+    sendToServer('imgurClientId', null)
+}
+
 let sendAuthCookie = (authCookie) =>
 {
     sendToServer('cookie', { cookie: authCookie })
@@ -253,10 +261,15 @@ ws.onmessage = (event) =>
         fillQueue(queueInfo)
         updateTimer(queueInfo.queuePaused, queueInfo.queueInterval, queueInfo.queuePaused ? queueInfo.queueTimeLeft : queueInfo.queueSubmissionDate)
     }
+    else if (json.type == 'imgurClientId')
+    {
+        imgurClientId = json.value
+    }
 }
 
 ws.onopen = (event) =>
 {
     sendAuthCookie(getCookie('superSecretCookie1337'))
     requestQueueInfo()
+    requestImgurClientId()
 }
