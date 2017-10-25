@@ -68,6 +68,8 @@ wss.on('connection', (connection, req) =>
     {
         let json = JSON.parse(message)
 
+        console.log(`received: ${message}`)
+
         if (!firstMessageReceived)
         {
             if (json.type == 'cookie')
@@ -91,8 +93,6 @@ wss.on('connection', (connection, req) =>
 
             firstMessageReceived = true
         }
-
-        console.log(`received: ${message}`)
 
         switch (json.type)
         {
@@ -160,6 +160,13 @@ wss.on('connection', (connection, req) =>
                 {
                     let sent = JSON.stringify({ type: 'imgurClientId', value: secret.imgur_clientid })
                     Globals.users[userId].wsConnection.send(sent)
+
+                    break
+                }
+            
+            case 'imgurCallbackData':
+                {
+                    Globals.users[userId].wsConnection.send(JSON.stringify({ status: 'OK' }))
 
                     break
                 }

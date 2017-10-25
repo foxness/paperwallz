@@ -51,6 +51,11 @@ exports.reddit_callback = (req, res, next) =>
         next(new Error(403))
 }
 
+exports.imgur_callback = (req, res, next) =>
+{
+    res.render('imgurCallback')
+}
+
 exports.logout = (req, res, next) =>
 {
     req.logout()

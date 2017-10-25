@@ -15,6 +15,7 @@ router.get('/', mainController.index)
 router.get('/login', mainController.login)
 router.get('/auth/reddit', mainController.auth_reddit)
 router.get('/callback', mainController.reddit_callback)
+router.get('/auth_imgur', mainController.imgur_callback)
 router.get('/logout', mainController.logout)
 router.get('/queue', ensureAuthenticated, mainController.queue)
 
