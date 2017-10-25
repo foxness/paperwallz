@@ -95,7 +95,7 @@ wss.on('connection', (connection, req) =>
 
         switch (json.type)
         {
-            case 'cookie': break // should already handled at this point
+            case 'cookie': break // should already be handled at this point
 
             case 'queueInfo':
                 {

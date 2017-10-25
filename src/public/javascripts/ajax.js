@@ -81,6 +81,11 @@ $(() =>
             input.target.value = leadZero(input.target.value)
         }
     })
+
+    $('#test').on('click', () =>
+    {
+        sendToServer('imgurTest', null)
+    })
 })
 
 let leadZero = (s) =>

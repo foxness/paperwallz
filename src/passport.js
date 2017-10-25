@@ -81,20 +81,20 @@ passport.use(new RedditStrategy(
         try
         {
             let user = await User.findOne({ name: profile.name })
-            let tokenExpire = moment().add(1, 'h').toDate()
+            let tokenExpirationDate = moment().add(1, 'h').toDate()
     
             if (user)
             {
-                user = await User.findByIdAndUpdate(user.id, { accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire })
+                user = await User.findByIdAndUpdate(user.id, { redditAccessToken: accessToken, redditRefreshToken: refreshToken, redditAccessTokenExpirationDate: tokenExpirationDate })
             }
             else
             {
                 user = new User(
                 {
                     name: profile.name,
-                    accessToken: accessToken,
-                    refreshToken: refreshToken,
-                    accessTokenExpireDate: tokenExpire,
+                    redditAccessToken: accessToken,
+                    redditRefreshToken: refreshToken,
+                    redditAccessTokenExpirationDate: tokenExpirationDate,
                 })
     
                 user = await user.save()

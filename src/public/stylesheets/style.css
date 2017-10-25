@@ -1,7 +1,7 @@
 * {
   padding: 0;
   margin: 0;
-  /* border: 1px solid rgb(129, 129, 129); */
+  /* border: 1px solid #818181; */
   box-sizing: border-box;
 }
 
@@ -120,6 +120,10 @@ input[type=button] {
   margin: 20px 0px 20px 20px; /* no idea why doesn't 'margin: 20px' work */
   /* margin: 20px; */
   padding: 12px;
+}
+
+#test {
+  margin: 20px;
 }
 
 #queueBox {
