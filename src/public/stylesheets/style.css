@@ -211,12 +211,22 @@ body.dragging, body.dragging * {
   background-color: rgba(0,0,0,0.4);
 }
 
-#settingsContent {
+#settingsBox {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
   width: 60%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+#settingsContent {
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 #timeBox {
@@ -235,15 +245,6 @@ body.dragging, body.dragging * {
 
 #settingsOk {
   margin-left: 20px;
-}
-
-.timeBoxInnerInner {
-  margin: 5px;
-  padding: 5px;
-  display: inline-flex;
-  /* justify-content: center; */
-  align-items: center;
-  flex-direction: column;
 }
 
 .numberSetting {

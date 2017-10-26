@@ -28,11 +28,15 @@ html
         input#add_url(type='url', placeholder='Enter the url')
         input#add_submit(type='button', value='Add')
     div#fade
-      div#settingsContent
-        p.label Submission interval
-        div#timeBox
-          input#hourSetting.numberSetting(type='number', name='hour', min='0', max='23', value='3')
-          input#minuteSetting.numberSetting(type='number', name='minute', min='0', max='59', value='00')
+      div#settingsBox
+        div#settingsContent
+          div#submissionInterval
+            p.label Submission interval
+            div#timeBox
+              input#hourSetting.numberSetting(type='number', name='hour', min='0', max='23', value='3')
+              input#minuteSetting.numberSetting(type='number', name='minute', min='0', max='59', value='00')
+          div#imgurConnect
+            a#imgurLink Connect to Imgur
         div#settingsButtons
           input#settingsCancel(type='button', value='Cancel')
           input#settingsOk(type='button', value='OK')

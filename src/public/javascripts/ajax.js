@@ -1,7 +1,6 @@
 const queueBox = 'queueBox'
 paperwallz = {}
 let ws = null
-let imgurClientId = null
 
 $(() =>
 {
@@ -85,7 +84,7 @@ $(() =>
 
     $('#test').on('click', () =>
     {
-        window.location.assign(`https://api.imgur.com/oauth2/authorize?client_id=${imgurClientId}&response_type=token`)
+        // window.location.assign(`https://api.imgur.com/oauth2/authorize?client_id=${imgurClientId}&response_type=token`)
         // let w = window.open(, '_blank')
         // sendToServer('imgurTest', null)
     })
@@ -239,9 +238,9 @@ let requestQueueInfo = () =>
     sendToServer('queueInfo', null)
 }
 
-let requestImgurClientId = () =>
+let requestImgurInfo = () =>
 {
-    sendToServer('imgurClientId', null)
+    sendToServer('imgurInfo', null)
 }
 
 let sendAuthCookie = (authCookie) =>
@@ -261,9 +260,17 @@ ws.onmessage = (event) =>
         fillQueue(queueInfo)
         updateTimer(queueInfo.queuePaused, queueInfo.queueInterval, queueInfo.queuePaused ? queueInfo.queueTimeLeft : queueInfo.queueSubmissionDate)
     }
-    else if (json.type == 'imgurClientId')
+    else if (json.type == 'imgurInfo')
     {
-        imgurClientId = json.value
+        if (json.value.imgurConnected)
+        {
+            $('#imgurLink').text(`Connected to Imgur: ${json.value.imgurName}`)
+            $('#imgurLink').attr('href', '#')
+        }
+        else
+        {
+            $('#imgurLink').attr('href', `https://api.imgur.com/oauth2/authorize?client_id=${json.value.imgurClientId}&response_type=token`)
+        }
     }
 }
 
@@ -271,5 +278,5 @@ ws.onopen = (event) =>
 {
     sendAuthCookie(getCookie('superSecretCookie1337'))
     requestQueueInfo()
-    requestImgurClientId()
+    requestImgurInfo()
 }
