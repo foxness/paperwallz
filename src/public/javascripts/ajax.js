@@ -86,7 +86,7 @@ $(() =>
     {
         // window.location.assign(`https://api.imgur.com/oauth2/authorize?client_id=${imgurClientId}&response_type=token`)
         // let w = window.open(, '_blank')
-        // sendToServer('imgurTest', null)
+        sendToServer('imgurTest', null)
     })
 })
 
@@ -271,6 +271,10 @@ ws.onmessage = (event) =>
         {
             $('#imgurLink').attr('href', `https://api.imgur.com/oauth2/authorize?client_id=${json.value.imgurClientId}&response_type=token`)
         }
+    }
+    else if (json.type == 'imgurJson')
+    {
+        window.location.assign(json.value.data.link)
     }
 }
 

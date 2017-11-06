@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-process.on('unhandledRejection', up => { throw up })
+process.on('unhandledRejection', up => { console.log(up.stack); throw up; })
 
 let app = require('../app')
 let debug = require('debug')('paperwallz:server')

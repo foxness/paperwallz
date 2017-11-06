@@ -4,6 +4,7 @@ let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
 let secret = require('./config/secret')
+let Imgur = require('./imgur.js')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -172,7 +173,7 @@ wss.on('connection', (connection, req) =>
                                     user.connectedToImgur ?
                                     { imgurConnected: true, imgurName: user.imgurName }
                                     :
-                                    { imgurConnected: false, imgurClientID: secret.imgur_clientid }
+                                    { imgurConnected: false, imgurClientId: secret.imgur_clientid }
                                 )
                         })
 
@@ -192,6 +193,28 @@ wss.on('connection', (connection, req) =>
                         })
 
                     sendToUser(userId, { status: 'OK' })
+
+                    break
+                }
+
+            case 'imgurTest':
+                {
+                    let foundUser = await User.findById(userId)
+                    let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
+                    let imgur = new Imgur(foundUser)
+                    let result = await imgur.post(foundWallpaper.url)
+        
+                    // foundWallpaper.completedUrl = completedUrl
+                    // foundWallpaper.completionDate = new Date()
+                    // foundWallpaper = await foundWallpaper.save()
+                    // console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
+        
+                    // foundUser.completed.push(foundWallpaper)
+                    // foundUser.queue.shift()
+                    // foundUser = await foundUser.save()
+                    // await Globals.sendQueueInfoToUser(user.id)
+
+                    sendToUser(userId, { type: 'imgurJson', value: result })
 
                     break
                 }
