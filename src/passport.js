@@ -8,6 +8,7 @@ let Promise = require('promise')
 let Timer = require('./timer')
 let Wallpaper = require('./models/wallpaper')
 let Reddit = require('./reddit')
+let Imgur = require('./imgur')
 let User = require('./models/user')
 let secret = require('./config/secret')
 let Globals = require('./globals')
@@ -41,8 +42,12 @@ let userRuntimeFirstSetup = (user) =>
         {
             let foundUser = await User.findById(user.id)
             let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
+
+            let imgur = new Imgur(foundUser)
+            let imgurJson = await imgur.post(foundWallpaper.url)
+
             let reddit = new Reddit(foundUser)
-            let completedUrl = await reddit.post(foundWallpaper.url, foundWallpaper.title)
+            let completedUrl = await reddit.post(imgurJson.data.link, foundWallpaper.title)
 
             foundWallpaper.completedUrl = completedUrl
             foundWallpaper.completionDate = new Date()

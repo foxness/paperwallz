@@ -4,7 +4,7 @@ let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
 let secret = require('./config/secret')
-let Imgur = require('./imgur.js')
+let Imgur = require('./imgur')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
