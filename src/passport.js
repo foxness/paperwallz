@@ -47,12 +47,14 @@ let userRuntimeFirstSetup = (user) =>
             let imgurJson = await imgur.post(foundWallpaper.url)
 
             let reddit = new Reddit(foundUser)
-            let completedUrl = await reddit.post(imgurJson.data.link, foundWallpaper.title)
+            let postUrl = await reddit.post(imgurJson.data.link, foundWallpaper.title)
 
-            foundWallpaper.completedUrl = completedUrl
-            foundWallpaper.completionDate = new Date()
+            foundWallpaper.postDate = new Date()
+            foundWallpaper.postUrl = postUrl
+            foundWallpaper.imgurId = imgurJson.data.id
+            foundWallpaper.imgurDeleteHash = imgurJson.data.deletehash
             foundWallpaper = await foundWallpaper.save()
-            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
+            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
 
             foundUser.completed.push(foundWallpaper)
             foundUser.queue.shift()

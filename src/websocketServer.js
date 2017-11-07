@@ -19,7 +19,7 @@ let getQueueInfo = async(userId) =>
         info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
 
     for (let wallpaper of result.completed) // todo: use map()
-        info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, completedUrl: wallpaper.completedUrl })
+        info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, postUrl: wallpaper.postUrl })
 
     info.queueInterval = timer.interval.asMilliseconds()
 

@@ -130,7 +130,7 @@ let fillQueue = (queueInfo) =>
             row.append($('<td/>').text(remainingItemCount--))
             row.append($('<td/>').text(r.title).addClass('titleElem'))
             row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
-            row.append($('<td/>').append($('<a/>').attr({ 'href': r.completedUrl }).text('Open Post')))
+            row.append($('<td/>').append($('<a/>').attr({ 'href': r.postUrl }).text('Open Post')))
             tbody.append(row)
         }
 
