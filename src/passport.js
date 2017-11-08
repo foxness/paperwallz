@@ -40,26 +40,53 @@ let userRuntimeFirstSetup = (user) =>
         let timer = new Timer(moment.duration(1, 'h'))
         timer.on('tick', async () =>
         {
-            let foundUser = await User.findById(user.id)
-            let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
+            try
+            {
+                let foundUser = await User.findById(user.id)
+                let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
+    
+                let imgur = new Imgur(foundUser)
+                let imgurJson = await imgur.post(foundWallpaper.url)
+    
+                let reddit = new Reddit(foundUser)
+                let postUrl = await reddit.post(imgurJson.data.link, foundWallpaper.title)
+    
+                foundWallpaper.postDate = new Date()
+                foundWallpaper.postUrl = postUrl
+                foundWallpaper.imgurId = imgurJson.data.id
+                foundWallpaper.imgurDeleteHash = imgurJson.data.deletehash
+                foundWallpaper = await foundWallpaper.save()
+                console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
+    
+                foundUser.completed.push(foundWallpaper)
+                foundUser.queue.shift()
+                foundUser = await foundUser.save()
+                await Globals.sendQueueInfoToUser(user.id)
+            }
+            catch (error)
+            {
+                console.log(`ERROR ${error}`)
 
-            let imgur = new Imgur(foundUser)
-            let imgurJson = await imgur.post(foundWallpaper.url)
+                switch (error.message)
+                {
+                    case 'REDDIT_RATELIMIT':
+                    {
+                        Globals.sendToUser(user.id,
+                            {
+                                type: 'error',
+                                errorType: 'ratelimit',
+                                msUntilResolved: error.msUntilResolved
+                            })
 
-            let reddit = new Reddit(foundUser)
-            let postUrl = await reddit.post(imgurJson.data.link, foundWallpaper.title)
+                        break
+                    }
 
-            foundWallpaper.postDate = new Date()
-            foundWallpaper.postUrl = postUrl
-            foundWallpaper.imgurId = imgurJson.data.id
-            foundWallpaper.imgurDeleteHash = imgurJson.data.deletehash
-            foundWallpaper = await foundWallpaper.save()
-            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
-
-            foundUser.completed.push(foundWallpaper)
-            foundUser.queue.shift()
-            foundUser = await foundUser.save()
-            await Globals.sendQueueInfoToUser(user.id)
+                    default:
+                    {
+                        throw error
+                    }
+                }
+            }
         })
 
         timer.on('start', () =>

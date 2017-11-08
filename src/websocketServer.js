@@ -55,10 +55,10 @@ let deleteWallpaper = async(id) =>
 
 Globals.sendQueueInfoToUser = async(userId) =>
 {
-    sendToUser(userId, { type: 'queueInfo', value: await getQueueInfo(userId) })
+    Globals.sendToUser(userId, { type: 'queueInfo', value: await getQueueInfo(userId) })
 }
 
-let sendToUser = (userId, obj) =>
+Globals.sendToUser = (userId, obj) =>
 {
     let sent = JSON.stringify(obj)
     Globals.users[userId].wsConnection.send(sent)
@@ -165,7 +165,7 @@ wss.on('connection', (connection, req) =>
             case 'imgurInfo':
                 {
                     let user = await User.findById(userId)
-                    sendToUser(userId,
+                    Globals.sendToUser(userId,
                         {
                             type: 'imgurInfo',
                             value:
@@ -192,7 +192,7 @@ wss.on('connection', (connection, req) =>
                             imgurAccessTokenExpirationDate: moment().add(parseInt(json.value.expires_in), 's').toDate(),
                         })
 
-                    sendToUser(userId, { status: 'OK' })
+                    Globals.sendToUser(userId, { status: 'OK' })
 
                     break
                 }
@@ -214,7 +214,7 @@ wss.on('connection', (connection, req) =>
                     // foundUser = await foundUser.save()
                     // await Globals.sendQueueInfoToUser(user.id)
 
-                    sendToUser(userId, { type: 'imgurJson', value: result })
+                    Globals.sendToUser(userId, { type: 'imgurJson', value: result })
 
                     break
                 }

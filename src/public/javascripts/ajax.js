@@ -276,6 +276,22 @@ ws.onmessage = (event) =>
     {
         window.location.assign(json.value.data.link)
     }
+    else if (json.type == 'error')
+    {
+        switch (json.errorType)
+        {
+            case 'ratelimit':
+            {
+                alert(`Reddit ratelimit: try again ${moment.duration(json.msUntilResolved).humanize(true)}`)
+
+                break
+            }
+        }
+    }
+    else
+    {
+        alert(`Unknown server response: ${json}`)
+    }
 }
 
 ws.onopen = (event) =>

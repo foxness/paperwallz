@@ -8,7 +8,6 @@ let UserSchema = Schema(
     redditRefreshToken: { type: String, required: true },
     redditAccessToken: { type: String, required: false },
     redditAccessTokenExpirationDate: { type: Date, required: false },
-    // redditLastPostDate: { type: Date, required: false },
     connectedToImgur: { type: Boolean, required: true, default: false },
     imgurAccountId : { type: String, required: false },
     imgurName: { type: String, required: false },
