@@ -1,5 +1,4 @@
-let request = require('request')
-let async = require('async')
+let rp = require('request-promise')
 let moment = require('moment')
 let secretJs = require('./config/secret')
 let User = require('./models/user')
@@ -18,7 +17,7 @@ class Reddit
         this.user = user
     }
 
-    refreshAccessToken(callback)
+    async refreshAccessToken()
     {
         let requestOptions =
         {
@@ -35,79 +34,47 @@ class Reddit
             }
         }
 
-        request.post(this.ACCESS_TOKEN_URL, requestOptions, (err, response, body) =>
-        {
-            if (!err)
+        let responseBody = await rp.post(this.ACCESS_TOKEN_URL, requestOptions)
+
+        this.user = await User.findByIdAndUpdate(this.user.id,
             {
-                User.findByIdAndUpdate(this.user.id, { redditAccessToken: JSON.parse(body).access_token, redditAccessTokenExpirationDate: moment().add(1, 'h').toDate() }, ((err, result) =>
-                {
-                    this.user = result
-                    callback(err)
-                }).bind(this))
-            }
-            else
-            {
-                callback(err)
-            }
-        })
+                redditAccessToken: JSON.parse(responseBody).access_token,
+                redditAccessTokenExpirationDate: moment().add(1, 'h').toDate()
+            })
     }
 
-    post(image_url, title)
+    async post(image_url, title)
     {
-        return new Promise(((resolve, reject) =>
+        if (!this.user.redditAccessToken || moment().isAfter(moment(this.user.redditAccessTokenExpirationDate)))
         {
-            let requestOptions =
+            await this.refreshAccessToken()
+        }
+
+        let requestOptions =
+        {
+            headers: { 'User-Agent': this.USER_AGENT },
+            auth: { bearer: this.user.redditAccessToken },
+            form:
             {
-                headers: { 'User-Agent': this.USER_AGENT },
-                auth: { bearer: this.user.redditAccessToken },
-                form:
-                {
-                    'api_type': 'json',
-                    'kind': 'self',
-                    'resubmit': 'true',
-                    'sendreplies': 'true',
-                    'sr': 'test',
-                    'text': image_url,
-                    // 'url': image_url,
-                    'title': title
-                }
+                'api_type': 'json',
+                'kind': 'self',
+                'resubmit': 'true',
+                'sendreplies': 'true',
+                'sr': 'test',
+                'text': image_url,
+                // 'url': image_url,
+                'title': title
             }
-    
-            let funcs =
-            [
-                (callback) =>
-                {
-                    request.post(this.SUBMIT_URL, requestOptions, (err, response, body) =>
-                    {
-                        if (err)
-                            return reject(err)
-                        
-                        if (response.statusCode != 200)
-                            return reject(response)
-    
-                        let json = JSON.parse(body).json
-    
-                        if (json.errors.length > 0)
-                            return reject(json.errors)
-                        
-                        resolve(json.data.url)
-                    })
-                }
-            ]
-    
-            if (!this.user.redditAccessToken || moment().isAfter(moment(this.user.redditAccessTokenExpirationDate)))
-            {
-                funcs.unshift((callback) => { this.refreshAccessToken(callback) })
-            }
-    
-            async.series(funcs, (err, results) =>
-            {
-                if (err)
-                    return reject(err)
-                
-                resolve(results.pop())
-            })
-        }).bind(this))
+        }
+
+        let responseBody = await rp.post(this.SUBMIT_URL, requestOptions)
+
+        let json = JSON.parse(responseBody).json
+        
+        if (json.errors.length > 0)
+            throw new Error(`REDDIT POST ERROR: ${JSON.stringify(json.errors)}`)
+
+        return json.data.url
     }
 }
 
