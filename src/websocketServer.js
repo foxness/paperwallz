@@ -1,7 +1,10 @@
 let WebSocket = require('ws')
+let moment = require('moment')
 let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
+let secret = require('./config/secret')
+let Imgur = require('./imgur')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -16,7 +19,7 @@ let getQueueInfo = async(userId) =>
         info.queue.push({ title: wallpaper.title, url: wallpaper.url, id: wallpaper.id })
 
     for (let wallpaper of result.completed) // todo: use map()
-        info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, completedUrl: wallpaper.completedUrl })
+        info.queueCompleted.push({ title: wallpaper.title, url: wallpaper.url, postUrl: wallpaper.postUrl })
 
     info.queueInterval = timer.interval.asMilliseconds()
 
@@ -52,10 +55,14 @@ let deleteWallpaper = async(id) =>
 
 Globals.sendQueueInfoToUser = async(userId) =>
 {
-    let info = await getQueueInfo(userId)
-    let sent = JSON.stringify({ type: 'queueInfo', value: info })
+    sendToUser(userId, { type: 'queueInfo', value: await getQueueInfo(userId) })
+}
+
+let sendToUser = (userId, obj) =>
+{
+    let sent = JSON.stringify(obj)
     Globals.users[userId].wsConnection.send(sent)
-    // console.log(`sent: ${sent}`)
+    console.log(`sent: ${sent}`)
 }
 
 wss.on('connection', (connection, req) =>
@@ -66,6 +73,8 @@ wss.on('connection', (connection, req) =>
     connection.on('message', async(message) =>
     {
         let json = JSON.parse(message)
+
+        console.log(`received: ${message}`)
 
         if (!firstMessageReceived)
         {
@@ -91,11 +100,9 @@ wss.on('connection', (connection, req) =>
             firstMessageReceived = true
         }
 
-        console.log(`received: ${message}`)
-
         switch (json.type)
         {
-            case 'cookie': break // should already handled at this point
+            case 'cookie': break // should already be handled at this point
 
             case 'queueInfo':
                 {
@@ -151,6 +158,63 @@ wss.on('connection', (connection, req) =>
             case 'queueInterval':
                 {
                     Globals.users[userId].timer.changeInterval(parseInt(json.value.ms))
+
+                    break
+                }
+            
+            case 'imgurInfo':
+                {
+                    let user = await User.findById(userId)
+                    sendToUser(userId,
+                        {
+                            type: 'imgurInfo',
+                            value:
+                                (
+                                    user.connectedToImgur ?
+                                    { imgurConnected: true, imgurName: user.imgurName }
+                                    :
+                                    { imgurConnected: false, imgurClientId: secret.imgur_clientid }
+                                )
+                        })
+
+                    break
+                }
+            
+            case 'imgurCallbackData':
+                {
+                    let user = await User.findByIdAndUpdate(userId,
+                        {
+                            connectedToImgur: true,
+                            imgurAccountId: json.value.account_id,
+                            imgurName: json.value.account_username,
+                            imgurRefreshToken: json.value.refresh_token,
+                            imgurAccessToken: json.value.access_token,
+                            imgurAccessTokenExpirationDate: moment().add(parseInt(json.value.expires_in), 's').toDate(),
+                        })
+
+                    sendToUser(userId, { status: 'OK' })
+
+                    break
+                }
+
+            case 'imgurTest':
+                {
+                    let foundUser = await User.findById(userId)
+                    let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
+                    let imgur = new Imgur(foundUser)
+                    let result = await imgur.post(foundWallpaper.url)
+        
+                    // foundWallpaper.completedUrl = completedUrl
+                    // foundWallpaper.completionDate = new Date()
+                    // foundWallpaper = await foundWallpaper.save()
+                    // console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
+        
+                    // foundUser.completed.push(foundWallpaper)
+                    // foundUser.queue.shift()
+                    // foundUser = await foundUser.save()
+                    // await Globals.sendQueueInfoToUser(user.id)
+
+                    sendToUser(userId, { type: 'imgurJson', value: result })
 
                     break
                 }

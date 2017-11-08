@@ -81,6 +81,13 @@ $(() =>
             input.target.value = leadZero(input.target.value)
         }
     })
+
+    $('#test').on('click', () =>
+    {
+        // window.location.assign(`https://api.imgur.com/oauth2/authorize?client_id=${imgurClientId}&response_type=token`)
+        // let w = window.open(, '_blank')
+        sendToServer('imgurTest', null)
+    })
 })
 
 let leadZero = (s) =>
@@ -123,7 +130,7 @@ let fillQueue = (queueInfo) =>
             row.append($('<td/>').text(remainingItemCount--))
             row.append($('<td/>').text(r.title).addClass('titleElem'))
             row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
-            row.append($('<td/>').append($('<a/>').attr({ 'href': r.completedUrl }).text('Open Post')))
+            row.append($('<td/>').append($('<a/>').attr({ 'href': r.postUrl }).text('Open Post')))
             tbody.append(row)
         }
 
@@ -231,6 +238,11 @@ let requestQueueInfo = () =>
     sendToServer('queueInfo', null)
 }
 
+let requestImgurInfo = () =>
+{
+    sendToServer('imgurInfo', null)
+}
+
 let sendAuthCookie = (authCookie) =>
 {
     sendToServer('cookie', { cookie: authCookie })
@@ -248,10 +260,27 @@ ws.onmessage = (event) =>
         fillQueue(queueInfo)
         updateTimer(queueInfo.queuePaused, queueInfo.queueInterval, queueInfo.queuePaused ? queueInfo.queueTimeLeft : queueInfo.queueSubmissionDate)
     }
+    else if (json.type == 'imgurInfo')
+    {
+        if (json.value.imgurConnected)
+        {
+            $('#imgurLink').text(`Connected to Imgur: ${json.value.imgurName}`)
+            $('#imgurLink').attr('href', '#')
+        }
+        else
+        {
+            $('#imgurLink').attr('href', `https://api.imgur.com/oauth2/authorize?client_id=${json.value.imgurClientId}&response_type=token`)
+        }
+    }
+    else if (json.type == 'imgurJson')
+    {
+        window.location.assign(json.value.data.link)
+    }
 }
 
 ws.onopen = (event) =>
 {
     sendAuthCookie(getCookie('superSecretCookie1337'))
     requestQueueInfo()
+    requestImgurInfo()
 }

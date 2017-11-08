@@ -27,7 +27,7 @@ exports.login = (req, res, next) =>
     res.render('login')
 }
 
-exports.auth_reddit = (req, res, next) =>
+exports.redditAuth = (req, res, next) =>
 {
     req.session.state = crypto.randomBytes(32).toString('hex')
     passport.authenticate('reddit',
@@ -37,7 +37,7 @@ exports.auth_reddit = (req, res, next) =>
     })(req, res, next)
 }
 
-exports.reddit_callback = (req, res, next) =>
+exports.redditCallback = (req, res, next) =>
 {
     if (req.query.state == req.session.state)
     {
@@ -49,6 +49,11 @@ exports.reddit_callback = (req, res, next) =>
     }
     else
         next(new Error(403))
+}
+
+exports.imgurCallback = (req, res, next) =>
+{
+    res.render('imgurCallback')
 }
 
 exports.logout = (req, res, next) =>

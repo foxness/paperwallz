@@ -31,7 +31,7 @@ class Reddit
             form:
             {
                 grant_type: 'refresh_token',
-                refresh_token: this.user.refreshToken
+                refresh_token: this.user.redditRefreshToken
             }
         }
 
@@ -39,7 +39,7 @@ class Reddit
         {
             if (!err)
             {
-                User.findByIdAndUpdate(this.user.id, { accessToken: JSON.parse(body).access_token, accessTokenExpireDate: moment().add(1, 'h').toDate() }, ((err, result) =>
+                User.findByIdAndUpdate(this.user.id, { redditAccessToken: JSON.parse(body).access_token, redditAccessTokenExpirationDate: moment().add(1, 'h').toDate() }, ((err, result) =>
                 {
                     this.user = result
                     callback(err)
@@ -59,7 +59,7 @@ class Reddit
             let requestOptions =
             {
                 headers: { 'User-Agent': this.USER_AGENT },
-                auth: { bearer: this.user.accessToken },
+                auth: { bearer: this.user.redditAccessToken },
                 form:
                 {
                     'api_type': 'json',
@@ -95,7 +95,7 @@ class Reddit
                 }
             ]
     
-            if (!this.user.accessToken || moment().isAfter(moment(this.user.accessTokenExpireDate)))
+            if (!this.user.redditAccessToken || moment().isAfter(moment(this.user.redditAccessTokenExpirationDate)))
             {
                 funcs.unshift((callback) => { this.refreshAccessToken(callback) })
             }

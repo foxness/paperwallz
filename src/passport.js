@@ -8,6 +8,7 @@ let Promise = require('promise')
 let Timer = require('./timer')
 let Wallpaper = require('./models/wallpaper')
 let Reddit = require('./reddit')
+let Imgur = require('./imgur')
 let User = require('./models/user')
 let secret = require('./config/secret')
 let Globals = require('./globals')
@@ -41,13 +42,19 @@ let userRuntimeFirstSetup = (user) =>
         {
             let foundUser = await User.findById(user.id)
             let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
-            let reddit = new Reddit(foundUser)
-            let completedUrl = await reddit.post(foundWallpaper.url, foundWallpaper.title)
 
-            foundWallpaper.completedUrl = completedUrl
-            foundWallpaper.completionDate = new Date()
+            let imgur = new Imgur(foundUser)
+            let imgurJson = await imgur.post(foundWallpaper.url)
+
+            let reddit = new Reddit(foundUser)
+            let postUrl = await reddit.post(imgurJson.data.link, foundWallpaper.title)
+
+            foundWallpaper.postDate = new Date()
+            foundWallpaper.postUrl = postUrl
+            foundWallpaper.imgurId = imgurJson.data.id
+            foundWallpaper.imgurDeleteHash = imgurJson.data.deletehash
             foundWallpaper = await foundWallpaper.save()
-            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
+            console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
 
             foundUser.completed.push(foundWallpaper)
             foundUser.queue.shift()
@@ -81,20 +88,20 @@ passport.use(new RedditStrategy(
         try
         {
             let user = await User.findOne({ name: profile.name })
-            let tokenExpire = moment().add(1, 'h').toDate()
+            let tokenExpirationDate = moment().add(1, 'h').toDate()
     
             if (user)
             {
-                user = await User.findByIdAndUpdate(user.id, { accessToken: accessToken, refreshToken: refreshToken, accessTokenExpireDate: tokenExpire })
+                user = await User.findByIdAndUpdate(user.id, { redditAccessToken: accessToken, redditRefreshToken: refreshToken, redditAccessTokenExpirationDate: tokenExpirationDate })
             }
             else
             {
                 user = new User(
                 {
                     name: profile.name,
-                    accessToken: accessToken,
-                    refreshToken: refreshToken,
-                    accessTokenExpireDate: tokenExpire,
+                    redditAccessToken: accessToken,
+                    redditRefreshToken: refreshToken,
+                    redditAccessTokenExpirationDate: tokenExpirationDate,
                 })
     
                 user = await user.save()

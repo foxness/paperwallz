@@ -13,8 +13,9 @@ ensureAuthenticated = (req, res, next) =>
 
 router.get('/', mainController.index)
 router.get('/login', mainController.login)
-router.get('/auth/reddit', mainController.auth_reddit)
-router.get('/callback', mainController.reddit_callback)
+router.get('/auth/reddit', mainController.redditAuth)
+router.get('/reddit/callback', mainController.redditCallback)
+router.get('/imgur/callback', mainController.imgurCallback)
 router.get('/logout', mainController.logout)
 router.get('/queue', ensureAuthenticated, mainController.queue)
 

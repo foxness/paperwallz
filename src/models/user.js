@@ -5,9 +5,15 @@ let Schema = mongoose.Schema
 let UserSchema = Schema(
 {
     name: { type: String, required: true },
-    refreshToken: { type: String, required: true },
-    accessToken: { type: String, required: false },
-    accessTokenExpireDate: { type: Date, required: false },
+    redditRefreshToken: { type: String, required: true },
+    redditAccessToken: { type: String, required: false },
+    redditAccessTokenExpirationDate: { type: Date, required: false },
+    connectedToImgur: { type: Boolean, required: true, default: false },
+    imgurAccountId : { type: String, required: false },
+    imgurName: { type: String, required: false },
+    imgurRefreshToken: { type: String, required: false },
+    imgurAccessToken: { type: String, required: false },
+    imgurAccessTokenExpirationDate: { type: Date, required: false },
     queue: { type: [{ type: Schema.Types.ObjectId, ref: 'Wallpaper' }] },
     completed: { type: [{ type: Schema.Types.ObjectId, ref: 'Wallpaper' }] }
 })
