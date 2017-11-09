@@ -290,3 +290,8 @@ input::-webkit-inner-spin-button {
   border-style: solid;
   border-color: transparent #6d6d6d transparent transparent;
 }
+
+.preview {
+  display: none;
+  position: absolute;
+}

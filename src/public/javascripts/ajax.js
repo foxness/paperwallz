@@ -2,6 +2,8 @@ const queueBox = 'queueBox'
 paperwallz = {}
 let ws = null
 
+const previewOffset = { x: 30, y: -15 }
+
 $(() =>
 {
     $('#toggle').on('click', () =>
@@ -90,6 +92,18 @@ $(() =>
     })
 })
 
+let getWallhavenId = (wallhavenUrl) =>
+{
+    let wallhaven = /https:\/\/wallpapers\.wallhaven\.cc\/wallpapers\/full\/wallhaven-(\d+)\.\w+/g
+    let match = wallhaven.exec(wallhavenUrl)
+    return match ? match[1] : null
+}
+
+let getWallhavenThumb = (wallhavenId) =>
+{
+    return `https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-${wallhavenId}.jpg`
+}
+
 let leadZero = (s) =>
 {
     return s.toString().length == 1 ? '0' + s : s
@@ -118,7 +132,7 @@ let fillQueue = (queueInfo) =>
             let row = $('<tr/>').addClass('notCompleted')
             row.append($('<td/>').text(remainingItemCount--))
             row.append($('<td/>').text(r.title).addClass('titleElem'))
-            row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
+            row.append($('<td/>').append($('<a/>').addClass('imageLink').attr('href', r.url).text('Link')))
             row.append($('<td/>').append($('<a/>').attr({ 'href': '#', 'onclick': `sendQueueDelete('${r.id}')` }).text('Delete')))
             tbody.append(row)
         }
@@ -129,7 +143,7 @@ let fillQueue = (queueInfo) =>
             let row = $('<tr/>').addClass('completed')
             row.append($('<td/>').text(remainingItemCount--))
             row.append($('<td/>').text(r.title).addClass('titleElem'))
-            row.append($('<td/>').append($('<a/>').attr('href', r.url).text('Link')))
+            row.append($('<td/>').append($('<a/>').addClass('imageLink').attr('href', r.url).text('Link')))
             row.append($('<td/>').append($('<a/>').attr({ 'href': r.postUrl }).text('Open Post')))
             tbody.append(row)
         }
@@ -178,6 +192,18 @@ let fillQueue = (queueInfo) =>
     let interval = moment.duration(queueInfo.queueInterval)
     $('#hourSetting').val(interval.hours())
     $('#minuteSetting').val(leadZero(interval.minutes()))
+
+    $('.imageLink').on('mouseenter', (event) =>
+    {
+        $('.previewImg').attr('src', getWallhavenThumb(getWallhavenId(event.target.href)))
+        $('.preview').css({ left: event.pageX + previewOffset.x, top: event.pageY + previewOffset.y }).show()
+        $(this).on('mouseleave', () => { $('.preview').hide() })
+    })
+
+    $('.imageLink').on('mousemove', (event) =>
+    {
+        $('.preview').css({ left: event.pageX + previewOffset.x, top: event.pageY + previewOffset.y })
+    })
 }
 
 let getCookie = (cname) =>
