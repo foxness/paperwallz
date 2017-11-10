@@ -92,16 +92,14 @@ $(() =>
     })
 })
 
-let getWallhavenId = (wallhavenUrl) =>
+let tryGetThumbnail = (imageUrl) =>
 {
     let wallhaven = /https:\/\/wallpapers\.wallhaven\.cc\/wallpapers\/full\/wallhaven-(\d+)\.\w+/g
-    let match = wallhaven.exec(wallhavenUrl)
-    return match ? match[1] : null
-}
-
-let getWallhavenThumb = (wallhavenId) =>
-{
-    return `https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-${wallhavenId}.jpg`
+    let match = wallhaven.exec(imageUrl)
+    if (match)
+        return `https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-${match[1]}.jpg`
+    
+    return imageUrl
 }
 
 let leadZero = (s) =>
@@ -195,12 +193,16 @@ let fillQueue = (queueInfo) =>
 
     $('.imageLink').on('mouseenter', (event) =>
     {
-        $('.previewImg').attr('src', getWallhavenThumb(getWallhavenId(event.target.href)))
-        $('.preview').css({ left: event.pageX + previewOffset.x, top: event.pageY + previewOffset.y }).show()
-        $(this).on('mouseleave', () => { $('.preview').hide() })
+        $('.previewImg').attr('src', tryGetThumbnail(event.target.href))
+        $('.preview').show()
     })
 
-    $('.imageLink').on('mousemove', (event) =>
+    $('.imageLink').on('mouseleave', () =>
+    {
+        $('.preview').hide()
+    })
+
+    $('.imageLink').on('mousemove', () =>
     {
         $('.preview').css({ left: event.pageX + previewOffset.x, top: event.pageY + previewOffset.y })
     })
