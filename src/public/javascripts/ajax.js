@@ -86,8 +86,6 @@ $(() =>
 
     $('#test').on('click', () =>
     {
-        // window.location.assign(`https://api.imgur.com/oauth2/authorize?client_id=${imgurClientId}&response_type=token`)
-        // let w = window.open(, '_blank')
         sendToServer('imgurTest', null)
     })
 })
@@ -98,6 +96,14 @@ let tryGetThumbnail = (imageUrl) =>
     let match = wallhaven.exec(imageUrl)
     if (match)
         return `https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-${match[1]}.jpg`
+    
+    let imgur = /https:\/\/i\.imgur\.com\/\w+()\.\w+/g
+    match = imgur.exec(imageUrl)
+    if (match)
+    {
+        let index = imageUrl.lastIndexOf('.')
+        return imageUrl.substring(0, index) + 'm' + imageUrl.substring(index)
+    }
     
     return imageUrl
 }
