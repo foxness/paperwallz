@@ -98,8 +98,7 @@ let tryGetThumbnail = (imageUrl) =>
         return `https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-${match[1]}.jpg`
     
     let imgur = /https:\/\/i\.imgur\.com\/\w+()\.\w+/g
-    match = imgur.exec(imageUrl)
-    if (match)
+    if (imgur.test(imageUrl))
     {
         let index = imageUrl.lastIndexOf('.')
         return imageUrl.substring(0, index) + 'm' + imageUrl.substring(index)
@@ -111,6 +110,14 @@ let tryGetThumbnail = (imageUrl) =>
 let leadZero = (s) =>
 {
     return s.toString().length == 1 ? '0' + s : s
+}
+
+let updateQueueIndexes = () =>
+{
+    let rows = $(`#${queueBox}`).children()[1].children
+
+    for (let i = 0; i < rows.length; ++i)
+        rows[rows.length - i - 1].children[0].innerHTML = i + 1
 }
 
 let fillQueue = (queueInfo) =>
@@ -190,6 +197,8 @@ let fillQueue = (queueInfo) =>
 
                 sendQueueMove(beforeIndex, afterIndex)
             }
+
+            updateQueueIndexes()
         }
     })
 
@@ -320,11 +329,16 @@ ws.onmessage = (event) =>
 
                 break
             }
+
+            default:
+            {
+                alert(`Unknown server error: ${event.data}`)
+            }
         }
     }
     else
     {
-        alert(`Unknown server response: ${json}`)
+        alert(`Unknown server response: ${event.data}`)
     }
 }
 
