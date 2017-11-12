@@ -291,7 +291,13 @@ let sendAuthCookie = (authCookie) =>
     sendToServer('cookie', { cookie: authCookie })
 }
 
-ws = new WebSocket('ws://localhost')
+let getWebsocketServerUri = () =>
+{
+    let host = /https?:\/\/([^/]+)/g
+    return `ws://${host.exec(window.location.href)[1]}`
+}
+
+ws = new WebSocket(getWebsocketServerUri())
 
 ws.onmessage = (event) =>
 {
