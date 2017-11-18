@@ -7,7 +7,7 @@ let debug = require('debug')('paperwallz:server')
 let http = require('http')
 let Globals = require('../globals')
 
-const port = 80
+const port = process.env.PORT || 80
 app.set('port', port)
 
 let server = http.createServer(app)

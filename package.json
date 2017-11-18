@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www.js"
+    "start": "node ./src/bin/www.js"
+  },
+  "engines": {
+    "node": "8.6.0"
   },
   "dependencies": {
     "async": "^2.5.0",

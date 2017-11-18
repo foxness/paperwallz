@@ -92,12 +92,12 @@ $(() =>
 
 let tryGetThumbnail = (imageUrl) =>
 {
-    let wallhaven = /https:\/\/wallpapers\.wallhaven\.cc\/wallpapers\/full\/wallhaven-(\d+)\.\w+/g
+    let wallhaven = /https:\/\/wallpapers\.wallhaven\.cc\/wallpapers\/full\/wallhaven-(\d+)\.\w+/
     let match = wallhaven.exec(imageUrl)
     if (match)
         return `https://wallpapers.wallhaven.cc/wallpapers/thumb/small/th-${match[1]}.jpg`
     
-    let imgur = /https:\/\/i\.imgur\.com\/\w+()\.\w+/g
+    let imgur = /https:\/\/i\.imgur\.com\/\w+()\.\w+/
     if (imgur.test(imageUrl))
     {
         let index = imageUrl.lastIndexOf('.')
@@ -293,7 +293,7 @@ let sendAuthCookie = (authCookie) =>
 
 let getWebsocketServerUri = () =>
 {
-    let host = /https?:\/\/([^/]+)/g
+    let host = /https?:\/\/([^/]+)/
     return `ws://${host.exec(window.location.href)[1]}`
 }
 
