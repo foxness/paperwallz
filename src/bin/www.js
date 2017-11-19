@@ -25,7 +25,8 @@ for (let i = 0; i < configVarNames.length; ++i)
 process.on('unhandledRejection', up => { console.error(up.stack); throw up; })
 
 let app = require('../app')
-let debug = require('debug')('paperwallz:info')
+let debug = require('debug')
+let debugInfo = debug('paperwallz:info')
 
 let http = require('http')
 let Globals = require('../globals')
@@ -71,5 +72,5 @@ function onListening()
     let bind = typeof addr === 'string' ?
         'pipe ' + addr :
         'port ' + addr.port
-    debug('Listening on ' + bind)
+    debugInfo('Listening on ' + bind)
 }

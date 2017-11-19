@@ -4,7 +4,8 @@ let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
 let Imgur = require('./imgur')
-let debug = require('debug')('paperwallz:info')
+let debug = require('debug')
+let debugVerbose = debug('paperwallz:verbose')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -62,7 +63,7 @@ Globals.sendToUser = (userId, obj) =>
 {
     let sent = JSON.stringify(obj)
     Globals.users[userId].wsConnection.send(sent)
-    debug(`sent: ${sent}`)
+    debugVerbose(`sent: ${sent}`)
 }
 
 wss.on('connection', (connection, req) =>
@@ -74,7 +75,7 @@ wss.on('connection', (connection, req) =>
     {
         let json = JSON.parse(message)
 
-        debug(`received: ${message}`)
+        debugVerbose(`received: ${message}`)
 
         if (!firstMessageReceived)
         {

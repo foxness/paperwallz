@@ -4,7 +4,9 @@ let async = require('async')
 let crypto = require('crypto')
 let RedditStrategy = require('passport-reddit').Strategy
 let Promise = require('promise')
-let debug = require('debug')('paperwallz:info')
+let debug = require('debug')
+let debugInfo = debug('paperwallz:info')
+let debugVerbose = debug('paperwallz:verbose')
 
 let Timer = require('./timer')
 let Wallpaper = require('./models/wallpaper')
@@ -56,7 +58,7 @@ let userRuntimeFirstSetup = (user) =>
                 foundWallpaper.imgurId = imgurJson.data.id
                 foundWallpaper.imgurDeleteHash = imgurJson.data.deletehash
                 foundWallpaper = await foundWallpaper.save()
-                debug(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
+                debugInfo(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
     
                 foundUser.completed.push(foundWallpaper)
                 foundUser.queue.shift()
@@ -91,12 +93,12 @@ let userRuntimeFirstSetup = (user) =>
 
         timer.on('start', () =>
         {
-            debug(`${user.name} START [${timer.timeLeft.asSeconds()}]`)
+            debugVerbose(`${user.name} START [${timer.timeLeft.asSeconds()}]`)
         })
 
         timer.on('stop', () =>
         {
-            debug(`${user.name} PAUSE [${timer.timeLeft.asSeconds()}]`)
+            debugVerbose(`${user.name} PAUSE [${timer.timeLeft.asSeconds()}]`)
         })
 
         Globals.users[user.id].timer = timer
