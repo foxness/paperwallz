@@ -22,6 +22,11 @@ for (let i = 0; i < configVarNames.length; ++i)
         throw new Error(`Missing config variable: ${configVarNames[i]}`)
 }
 
+process.env.DEBUG = process.env.DEBUG || 'paperwallz:info,paperwallz:verbose'
+process.env.NODE_ENV = process.env.NODE_ENV || 'development'
+
+console.log(`DEBUG: ${process.env.DEBUG}\nNODE_ENV: ${process.env.NODE_ENV}`)
+
 process.on('unhandledRejection', up => { console.error(up.stack); throw up; })
 
 let app = require('../app')
