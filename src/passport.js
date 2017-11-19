@@ -10,7 +10,6 @@ let Wallpaper = require('./models/wallpaper')
 let Reddit = require('./reddit')
 let Imgur = require('./imgur')
 let User = require('./models/user')
-let secret = require('./config/secret')
 let Globals = require('./globals')
 
 passport.serializeUser((user, done) =>
@@ -105,9 +104,9 @@ let userRuntimeFirstSetup = (user) =>
 
 passport.use(new RedditStrategy(
     {
-        clientID: secret.reddit_clientid,
-        clientSecret: secret.reddit_secret,
-        callbackURL: secret.reddit_callback,
+        clientID: process.env.REDDIT_CLIENTID,
+        clientSecret: process.env.REDDIT_SECRET,
+        callbackURL: process.env.REDDIT_CALLBACK,
         scope: 'submit'
     },
     async (accessToken, refreshToken, profile, done) =>

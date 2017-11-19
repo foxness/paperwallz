@@ -7,13 +7,12 @@ let bodyParser = require('body-parser')
 let session = require('express-session')
 let mongoose = require('mongoose')
 
-let secret = require('./config/secret')
 let configuredPassport = require('./passport')
 let index = require('./routes/index')
 
 let app = express()
 
-let mongoDB = secret.mongodb
+let mongoDB = process.env.MONGODB_URL
 mongoose.Promise = global.Promise
 mongoose.connect(mongoDB)
 let db = mongoose.connection

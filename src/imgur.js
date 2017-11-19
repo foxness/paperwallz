@@ -1,8 +1,4 @@
-// let request = require('request')
 let rp = require('request-promise')
-// let async = require('async')
-// let moment = require('moment')
-let secretJs = require('./config/secret')
 let User = require('./models/user')
 
 class Imgur
@@ -12,8 +8,8 @@ class Imgur
         this.UPLOAD_IMAGE_URL = 'https://api.imgur.com/3/image'
         this.USER_AGENT = 'Paperwallz by /u/foxneZz'
 
-        this.CLIENT_ID = secretJs.reddit_clientid
-        this.SECRET = secretJs.reddit_secret
+        this.CLIENT_ID = process.env.IMGUR_CLIENTID
+        this.SECRET = process.env.IMGUR_SECRET
 
         this.user = user
     }

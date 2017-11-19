@@ -3,7 +3,6 @@ let moment = require('moment')
 let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
-let secret = require('./config/secret')
 let Imgur = require('./imgur')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
@@ -173,7 +172,7 @@ wss.on('connection', (connection, req) =>
                                     user.connectedToImgur ?
                                     { imgurConnected: true, imgurName: user.imgurName }
                                     :
-                                    { imgurConnected: false, imgurClientId: secret.imgur_clientid }
+                                    { imgurConnected: false, imgurClientId: process.env.IMGUR_CLIENTID }
                                 )
                         })
 

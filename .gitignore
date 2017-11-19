@@ -66,8 +66,8 @@ database/**
 # VS Code files
 .vscode
 
-# Secret
-secret.js
+# Config
+config.env
 
 # JSBeautify
 .jsbeautifyrc

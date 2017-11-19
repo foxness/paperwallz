@@ -1,5 +1,27 @@
 #!/usr/bin/env node
 
+const dotenv = require('dotenv').config({ path: 'config.env' })
+
+if (dotenv.error && dotenv.error.errno != -4058) // -4058 = config (config.env) does not exist
+    throw dotenv.error
+
+const configVarNames =
+    [
+        'MONGODB_URL',
+        'REDDIT_CLIENTID',
+        'REDDIT_SECRET',
+        'REDDIT_CALLBACK',
+        'IMGUR_CLIENTID',
+        'IMGUR_SECRET',
+        'IMGUR_CALLBACK',
+    ]
+
+for (let i = 0; i < configVarNames.length; ++i)
+{
+    if (!process.env[configVarNames[i]])
+        throw new Error(`Missing config variable: ${configVarNames[i]}`)
+}
+
 process.on('unhandledRejection', up => { console.log(up.stack); throw up; })
 
 let app = require('../app')

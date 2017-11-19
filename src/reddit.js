@@ -1,6 +1,5 @@
 let rp = require('request-promise')
 let moment = require('moment')
-let secretJs = require('./config/secret')
 let User = require('./models/user')
 
 class Reddit
@@ -12,8 +11,8 @@ class Reddit
         this.USER_AGENT = 'Paperwallz by /u/foxneZz'
         this.RATELIMIT = moment.duration(10, 'minutes')
 
-        this.CLIENT_ID = secretJs.reddit_clientid
-        this.SECRET = secretJs.reddit_secret
+        this.CLIENT_ID = process.env.REDDIT_CLIENTID
+        this.SECRET = process.env.REDDIT_SECRET
 
         this.user = user
     }
