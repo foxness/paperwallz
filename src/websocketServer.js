@@ -4,6 +4,7 @@ let Globals = require('./globals')
 let User = require('./models/user')
 let Wallpaper = require('./models/wallpaper')
 let Imgur = require('./imgur')
+let debug = require('debug')('paperwallz:info')
 
 let wss = new WebSocket.Server({ server: Globals.httpServer })
 
@@ -61,7 +62,7 @@ Globals.sendToUser = (userId, obj) =>
 {
     let sent = JSON.stringify(obj)
     Globals.users[userId].wsConnection.send(sent)
-    console.log(`sent: ${sent}`)
+    debug(`sent: ${sent}`)
 }
 
 wss.on('connection', (connection, req) =>
@@ -73,7 +74,7 @@ wss.on('connection', (connection, req) =>
     {
         let json = JSON.parse(message)
 
-        console.log(`received: ${message}`)
+        debug(`received: ${message}`)
 
         if (!firstMessageReceived)
         {
@@ -206,7 +207,7 @@ wss.on('connection', (connection, req) =>
                     // foundWallpaper.completedUrl = completedUrl
                     // foundWallpaper.completionDate = new Date()
                     // foundWallpaper = await foundWallpaper.save()
-                    // console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
+                    // debug(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${completedUrl}]`)
         
                     // foundUser.completed.push(foundWallpaper)
                     // foundUser.queue.shift()

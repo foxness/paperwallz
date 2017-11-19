@@ -22,10 +22,11 @@ for (let i = 0; i < configVarNames.length; ++i)
         throw new Error(`Missing config variable: ${configVarNames[i]}`)
 }
 
-process.on('unhandledRejection', up => { console.log(up.stack); throw up; })
+process.on('unhandledRejection', up => { console.error(up.stack); throw up; })
 
 let app = require('../app')
-let debug = require('debug')('paperwallz:server')
+let debug = require('debug')('paperwallz:info')
+
 let http = require('http')
 let Globals = require('../globals')
 

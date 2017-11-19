@@ -4,6 +4,7 @@ let async = require('async')
 let crypto = require('crypto')
 let RedditStrategy = require('passport-reddit').Strategy
 let Promise = require('promise')
+let debug = require('debug')('paperwallz:info')
 
 let Timer = require('./timer')
 let Wallpaper = require('./models/wallpaper')
@@ -55,7 +56,7 @@ let userRuntimeFirstSetup = (user) =>
                 foundWallpaper.imgurId = imgurJson.data.id
                 foundWallpaper.imgurDeleteHash = imgurJson.data.deletehash
                 foundWallpaper = await foundWallpaper.save()
-                console.log(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
+                debug(`${foundUser.name} POSTED [${timer.timeLeft.asSeconds()}] [${postUrl}]`)
     
                 foundUser.completed.push(foundWallpaper)
                 foundUser.queue.shift()
@@ -64,7 +65,7 @@ let userRuntimeFirstSetup = (user) =>
             }
             catch (error)
             {
-                console.log(`ERROR ${error}`)
+                console.error(`TICK ERROR: ${error}`)
 
                 switch (error.message)
                 {
@@ -90,12 +91,12 @@ let userRuntimeFirstSetup = (user) =>
 
         timer.on('start', () =>
         {
-            console.log(`${user.name} START [${timer.timeLeft.asSeconds()}]`)
+            debug(`${user.name} START [${timer.timeLeft.asSeconds()}]`)
         })
 
         timer.on('stop', () =>
         {
-            console.log(`${user.name} PAUSE [${timer.timeLeft.asSeconds()}]`)
+            debug(`${user.name} PAUSE [${timer.timeLeft.asSeconds()}]`)
         })
 
         Globals.users[user.id].timer = timer
