@@ -1,6 +1,7 @@
 let rp = require('request-promise')
 let moment = require('moment')
 let User = require('./models/user')
+let Globals = require('./globals')
 
 class Reddit
 {
@@ -73,12 +74,12 @@ class Reddit
             form:
             {
                 'api_type': 'json',
-                'kind': 'self',
+                'kind': Globals.productionEnv ? 'image' : 'self',
                 'resubmit': 'true',
                 'sendreplies': 'true',
-                'sr': 'test',
-                'text': image_url,
-                // 'url': image_url,
+                'sr': Globals.productionEnv ? 'wallpapers' : 'test',
+                'text': Globals.productionEnv ? null : image_url,
+                'url': Globals.productionEnv ? image_url : null,
                 'title': title
             }
         }

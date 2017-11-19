@@ -25,16 +25,18 @@ for (let i = 0; i < configVarNames.length; ++i)
 process.env.DEBUG = process.env.DEBUG || 'paperwallz:info,paperwallz:verbose'
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
 
-console.log(`DEBUG: ${process.env.DEBUG}\nNODE_ENV: ${process.env.NODE_ENV}`)
-
 process.on('unhandledRejection', up => { console.error(up.stack); throw up; })
 
 let app = require('../app')
 let debug = require('debug')
 let debugInfo = debug('paperwallz:info')
 
+debugInfo(`DEBUG: ${process.env.DEBUG}\nNODE_ENV: ${process.env.NODE_ENV}`)
+
 let http = require('http')
 let Globals = require('../globals')
+
+Globals.productionEnv = process.env.NODE_ENV === 'production'
 
 const port = process.env.PORT || 80
 app.set('port', port)

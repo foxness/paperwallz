@@ -67,7 +67,7 @@ let userRuntimeFirstSetup = (user) =>
             }
             catch (error)
             {
-                console.error(`TICK ERROR: ${error}`)
+                debugInfo(`TICK ERROR: ${error}`)
 
                 switch (error.message)
                 {
