@@ -1,3 +1,6 @@
+const useSecureWebsockets = false
+const websocketProtocol = useSecureWebsockets ? 'wss' : 'ws'
+
 let getImgurCallbackData = () =>
 {
     let url = window.location.href
@@ -46,14 +49,23 @@ let sendImgurCallbackData = (data) =>
     sendToServer('imgurCallbackData', data)
 }
 
-let ws = new WebSocket('ws://localhost')
+let getWebsocketServerUri = () =>
+{
+    let host = /https?:\/\/([^/]+)/g
+    return `${websocketProtocol}://${host.exec(window.location.href)[1]}`
+}
+
+ws = new WebSocket(getWebsocketServerUri())
 
 ws.onmessage = (event) =>
 {
     let json = JSON.parse(event.data)
     
     if (json.status == 'OK')
-        window.location.assign('http://localhost/queue')
+    {
+        let host = /\w+:\/\/[^/]+\//
+        window.location.assign(`${host.exec(window.location.href)[0]}queue`)
+    }
 }
 
 ws.onopen = (event) =>

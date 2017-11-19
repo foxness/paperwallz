@@ -1,6 +1,8 @@
 const queueBox = 'queueBox'
 paperwallz = {}
 let ws = null
+const useSecureWebsockets = false
+const websocketProtocol = useSecureWebsockets ? 'wss' : 'ws'
 
 const previewOffset = { x: 30, y: -15 }
 
@@ -294,7 +296,7 @@ let sendAuthCookie = (authCookie) =>
 let getWebsocketServerUri = () =>
 {
     let host = /https?:\/\/([^/]+)/
-    return `ws://${host.exec(window.location.href)[1]}`
+    return `${websocketProtocol}://${host.exec(window.location.href)[1]}`
 }
 
 ws = new WebSocket(getWebsocketServerUri())
