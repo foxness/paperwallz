@@ -45,6 +45,10 @@ let userRuntimeFirstSetup = (user) =>
             try
             {
                 let foundUser = await User.findById(user.id)
+
+                if (foundUser.queue.length == 0)
+                    throw new Error('EMPTY_QUEUE')
+
                 let foundWallpaper = await Wallpaper.findById(foundUser.queue[0].toString())
     
                 let imgur = new Imgur(foundUser)
@@ -78,6 +82,17 @@ let userRuntimeFirstSetup = (user) =>
                                 type: 'error',
                                 errorType: 'ratelimit',
                                 msUntilResolved: error.msUntilResolved
+                            })
+
+                        break
+                    }
+
+                    case 'EMPTY_QUEUE':
+                    {
+                        Globals.sendToUser(user.id,
+                            {
+                                type: 'error',
+                                errorType: 'emptyQueue'
                             })
 
                         break

@@ -333,7 +333,14 @@ ws.onmessage = (event) =>
         {
             case 'ratelimit':
             {
-                alert(`Reddit ratelimit: try again ${moment.duration(json.msUntilResolved).humanize(true)}`)
+                alert(`ERROR - reddit ratelimit - try again ${moment.duration(json.msUntilResolved).humanize(true)}`)
+
+                break
+            }
+
+            case 'emptyQueue':
+            {
+                alert('ERROR - empty queue - there\'s nothing to post')
 
                 break
             }
