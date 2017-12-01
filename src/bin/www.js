@@ -2,7 +2,7 @@
 
 const dotenv = require('dotenv').config({ path: 'config.env' })
 
-if (dotenv.error && dotenv.error.errno != -4058) // -4058 = config (config.env) does not exist
+if (dotenv.error && dotenv.error.message.indexOf('ENOENT: no such file or directory') == -1) // ignores missing config.env
     throw dotenv.error
 
 const configVarNames =
