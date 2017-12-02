@@ -1,0 +1,19 @@
+#bigLogin {
+    padding: 20px;
+    font-family: 'Lato', sans-serif;
+    font-size: 30pt;
+    color: white;
+    border: 2px solid;
+    text-decoration: none;
+    background-color: dodgerblue;
+}
+
+body, html, .container {
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
